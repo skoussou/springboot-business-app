@@ -29,7 +29,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 1. _Fork_ this repository for every new service (ie. this is just a baseline)
 2. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (service-name.xml kie-server-state, application-XXX.properties) based on what is to run)
 * *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
-* *[Parameter 2]* Name of Business Service (will be used for config file, 'kieserver.serverId', 'kieserver.Name')
+* *[Parameter 2]* Name of Business Service (will be used for config file, `kieserver.serverId`, `kieserver.Name`)
 
 	./JenkinspipelineBatch.sh ./JenkinspipelineBatch.sh basic#PER_PROCESS_INSTANCE#https://github.com/skoussou/basic-kjar,retail#PER_CASE#https://github.com/skoussou/example-retail-credit-kjar onboarding-service
 
