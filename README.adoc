@@ -51,7 +51,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 
 [[anchor-1]]
-=== How to run the Sprinboot Service
+== How to run the Sprinboot Service
 
 === Run the service locally via Maven
 
