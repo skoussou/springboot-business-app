@@ -1,11 +1,12 @@
 = Business Automation -  Springboot Runtime App
-
-image::images/aim.jpg[800,800] 
+:toc:
 
 
 == The Aim 
 
 * A re-usable Springboot Busines Application with _minimal_ dependencies to provide a Runtime for JBPM/Drools (RHPAM/RHDM) business projects
+
+image::images/aim.jpg[800,800] 
 
 == The Requirements
 
@@ -22,7 +23,7 @@ image::images/aim.jpg[800,800]
 * 4. - *MUST:* to Have: I would like to have Monitoring via RHPAM Monitor/Business Central possible)
 * 5. - *MUST:* to Have: I would like to ???
 
-== How To Use
+== How To Use (non-CICD)
 
 IMPORTANT: Important: Before using note that by default this App provides the minimum configurations. See xref:anchor-2[How To Further Configure the App]
 
@@ -42,6 +43,12 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/[YOUR-ALIAS]/processes/[YOUR-PROCESS-ID]/instances'
 	eg. curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/retail/processes/my-process/instances'
+
+
+== How To Use (CICD)
+
+
+
 
 [[anchor-1]]
 === How to run the Sprinboot Service
