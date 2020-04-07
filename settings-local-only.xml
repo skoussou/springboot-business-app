@@ -1,0 +1,48 @@
+<settings>
+	<localRepository>/home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</localRepository>
+
+  <profiles>
+    <!-- Configure the JBoss GA Maven repository -->
+    <profile>
+      <id>local-m2-repository</id>
+      <repositories>
+        <repository>
+          <id>local-m2-repository</id>
+          <url>file:///home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</url>
+          <!--url>file:///home/stkousso/.m2/local-m2-repository</url-->
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>local-m2-repository-plugins</id>
+          <url>file:///home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</url>
+          <!--url>file:///home/stkousso/.m2/local-m2-repository</url-->
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+  </profiles>
+  <activeProfiles>
+    <!-- Optionally, make the repository active by default -->
+    <activeProfile>local-m2-repository</activeProfile>
+  </activeProfiles>
+
+
+</settings>
+

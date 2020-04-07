@@ -1,0 +1,63 @@
+<settings>
+	<!--localRepository>/home/stkousso/.m2/local-m2-repository</localRepository-->
+	<localRepository>/home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</localRepository>
+
+  <servers>
+    <server>
+      <id>nexus</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+
+
+  <server>
+   <id>releases</id>
+   <username>admin</username>
+   <password>admin123</password>
+  </server>
+  <server>
+    <id>snapshots</id>
+    <username>admin</username>
+    <password>admin123</password>
+  </server>	    
+
+  </servers>
+
+  <profiles>
+    <!-- Configure the JBoss GA Maven repository -->
+    <profile>
+      <id>jboss-ga-repository</id>
+      <repositories>
+        <repository>
+          <id>jboss-ga-repository</id>
+          <url>https://maven.repository.redhat.com/ga</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>jboss-ga-repository</id>
+          <url>http://maven.repository.redhat.com/ga</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+  </profiles>
+  <activeProfiles>
+    <!-- Optionally, make the repository active by default -->
+    <activeProfile>jboss-ga-repository</activeProfile>
+  </activeProfiles>
+
+</settings>
+
