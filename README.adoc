@@ -78,6 +78,7 @@ WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find i
 	              value: '512'
 
 and append
+
 	          env:
 	            - name: GC_MAX_METASPACE_SIZE
 	              value: '512'
