@@ -70,8 +70,20 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50
 	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50
 
-	JAVA_OPTIONS not copied into deploymentConfig
+	
+WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find in the DeploymentConfig
 
+	          env:
+	            - name: GC_MAX_METASPACE_SIZE
+	              value: '512'
+
+and append
+	          env:
+	            - name: GC_MAX_METASPACE_SIZE
+	              value: '512'
+	          env:
+	            - name: JAVA_OPTIONS
+	              value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
 
 
 [[anchor-2]]
