@@ -38,16 +38,20 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 * Get Containers List
 
 	curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://127.0.0.1:8090/rest/server/containers'
+	curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers'
 
 * Start Process
 
 	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/[YOUR-ALIAS]/processes/[YOUR-PROCESS-ID]/instances'
 	eg. curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/retail/processes/my-process/instances'
-
+	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/basic-kjar-2.0.0/processes/my-process/instances'
 
 == How To Use (CICD)
 
-
+- prepare local-m2-repo based on KJARs to load containers for
+- pull built KJARs from NEXUS (that is important since there may be more than 1 version of the same KJAR and can't build all) and save into local-m2-repo
+- build the springboot app
+- load everything into image
 
 
 [[anchor-1]]
@@ -55,8 +59,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 === Run the service locally via Maven
 
-	mvn spring-boot:run -Dkie.maven.settings.custom=settings-local-only.xml -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy
-
+	mvn spring-boot:run -Dspring-boot.run.profiles=h2 -Dspring-boot.run.jvmArguments="-Dkie.maven.settings.custom=settings-local-only.xml  -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy"
 
 === Run the service locally as Docker
 
@@ -64,7 +67,12 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 === Run the service in K8s/Openshift cluster
 
-	TBD
+	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50
+	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50
+
+	JAVA_OPTIONS not copied into deploymentConfig
+
+
 
 [[anchor-2]]
 == How To Further Configure the App
