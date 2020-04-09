@@ -46,26 +46,21 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 	eg. curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/retail/processes/my-process/instances'
 	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/basic-kjar-2.0.0/processes/my-process/instances'
 
-== How To Use (CICD)
-
-- prepare local-m2-repo based on KJARs to load containers for
-- pull built KJARs from NEXUS (that is important since there may be more than 1 version of the same KJAR and can't build all) and save into local-m2-repo
-- build the springboot app
-- load everything into image
-
 
 [[anchor-1]]
-== How to run the Sprinboot Service
+=== How to run the Sprinboot Service
 
-=== Run the service locally via Maven
+==== Run the service locally via Maven
 
 	mvn spring-boot:run -Dspring-boot.run.profiles=h2 -Dspring-boot.run.jvmArguments="-Dkie.maven.settings.custom=settings-local-only.xml  -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy"
 
-=== Run the service locally as Docker
+==== Run the service locally as Docker
 
 	TBD
 
-=== Run the service in K8s/Openshift cluster
+==== Run the service in K8s/Openshift cluster
+
+mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
 
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50
 	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50
@@ -85,6 +80,35 @@ and append
 	          env:
 	            - name: JAVA_OPTIONS
 	              value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
+
+
+== How To Use (CICD)
+
+git clone https://github.com/ippul/offliner-maven-plugin.git
+
+
+
+
+* CICD requirements to satisfy
+** a) To install the KJARs in NEXUS server (normal CICD Lifecycle each KJAR has its own pipeline for release)
+** b) To configure the Springboot Service App with settings.xml pointing to the repos where KJARs can be found
+** c) To configure the Springboot Service App with the correct kie-server-state file (maybe automate)
+** d) To give the repos of the KJARs to build a maven repo for their dependencies
+** Steps
+*** - prepare local-m2-repo based on KJARs to load containers for
+*** - pull built KJARs from NEXUS (that is important since there may be more than 1 version of the same KJAR and can't build all) and save into local-m2-repo
+*** - build the springboot app
+*** - load everything into image
+
+=== Docs on Openshift DSL Pipeline creation
+
+* Logging into cluster https://github.com/jenkinsci/openshift-client-plugin#configuring-an-openshift-cluster[via openshift.withCluster] 
+
+
+
+openshift.withCluster( 'mytempcloudcluster' ) {
+    // ... operations relative to this cluster ...
+}
 
 
 [[anchor-2]]
