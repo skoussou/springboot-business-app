@@ -134,24 +134,43 @@ echo '##########################################################################
 CONTAINERS_XML="<containers>$CONTAINERS_XML</containers>"
 ##echo $CONTAINERS_XML | xmllint --format -
 echo
-echo "Update *.properties file with correct kieserver.serverId=$SB_APP_SERVICE and kieserver.serverName=$SB_APP_SERVICE"
-
+echo "Update SB properties files with correct kieserver.serverId=$SB_APP_SERVICE and kieserver.serverName=$SB_APP_SERVICE"
+echo 
 KEYS=(kieserver.serverId kieserver.serverName)
 
+properties_dir='./src/main/resources'
 for ((i = 0; i < ${#KEYS[@]}; ++i)); do
-    filename='./src/main/resources/application.properties'
-    if ! grep -R "^[#]*\s*${KEYS[$i]}=.*" $filename > /dev/null; then
-      echo "APPENDING because [${KEYS[$i]}] not found"
-      echo "#kie server config"  >> $filename
-      echo "=================="  >> $filename
-      echo "${KEYS[$i]}=$SB_APP_SERVICE" >> $filename
-    else
-      echo "SETTING because [${KEYS[$i]}] found already"
-      sed -ir "s/^[#]*\s*${KEYS[$i]}=.*/${KEYS[$i]}=$SB_APP_SERVICE/" $filename
-    fi
+    #filename='./src/main/resources/application.properties'
+    filename=""
+    #properties_dir='./src/main/resources'
+
+
+    #echo "ls $properties_dir |grep properties"
+    #files_list=$("ls $properties_dir |grep properties")
+
+    for entry in "$properties_dir"/*
+      do
+      if [[ $entry =~ \.properties$ ]]; then
+        echo "Updating SB Props [$entry]"
+        filename=$entry
+
+
+        if ! grep -R "^[#]*\s*${KEYS[$i]}=.*" $filename > /dev/null; then
+          echo "APPENDING because [${KEYS[$i]}] not found"
+          echo "#kie server config"  >> $filename
+          echo "=================="  >> $filename
+          echo "${KEYS[$i]}=$SB_APP_SERVICE" >> $filename
+        else
+          echo "SETTING because [${KEYS[$i]}] found already"
+          sed -ir "s/^[#]*\s*${KEYS[$i]}=.*/${KEYS[$i]}=$SB_APP_SERVICE/" $filename
+        fi
+        filename=""
+      fi
+    done    
 
 done
 
+rm -r $properties_dir"/.propertiesr"
 
 echo
 echo "Update/Create $SB_APP_SERVICE.xml with [$KJAR_GAV_LIST] to load the KJAR(s)"
