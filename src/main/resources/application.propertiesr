@@ -8,8 +8,8 @@ server.port=8090
 cxf.path=/rest
 
 #kie server config
-kieserver.serverId=onboarding-service
-kieserver.serverName=first-service
+kieserver.serverId=business-application-service
+kieserver.serverName=business-application-service
 kieserver.location=http://localhost:8090/rest/server
 #kieserver.controllers=
 
