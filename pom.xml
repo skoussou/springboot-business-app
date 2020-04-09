@@ -314,7 +314,7 @@
     </profile>
 
     <profile>
-      <id>openshift</id>
+      <id>openshift-f8</id>
       <activation>
         <property>
           <name>openshift</name>
@@ -476,7 +476,128 @@
       </build>
     </profile>
 
+    <profile>
+      <id>openshift</id>
+      <activation>
+        <property>
+          <name>openshift</name>
+        </property>
+      </activation>
 
+      <properties>
+        <fabric8.mode>openshift</fabric8.mode>
+        <fabric8.build.strategy>docker</fabric8.build.strategy>
+      </properties>
+
+      <dependencies>
+         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+         </dependency>
+      </dependencies>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
+            <version>${fabric8.version}</version>
+            <configuration>
+              <images>
+                <image>
+                  <name>${fabric8.namespace}/${project.artifactId}:${project.version}</name>
+                                    <build>
+                                        <dockerFileDir>${project.basedir}</dockerFileDir>
+                                        <!--contextDir>${project.basedir}</contextDir-->
+
+                                        <dockerFile>Dockerfile</dockerFile>
+                                        <filter>@</filter>
+                                        <assembly>
+                                            <mode>dir</mode>
+                                            <name>target</name>
+                                            <inline xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+                                                <files>
+                                                    <file>
+                                                        <source>${project.basedir}/target/${project.build.finalName}.jar</source>
+                                                        <outputDirectory>./</outputDirectory>
+                                                    </file>
+                                                    <file>
+                                                        <source>${project.artifactId}.xml</source>
+                                                        <outputDirectory>deployments</outputDirectory>
+                                                        <destName>${project.artifactId}.xml</destName>
+                                                    </file>
+                                                </files>
+                                                <fileSet>
+                                                    <directory>src/main/docker</directory>
+                                                    <outputDirectory>opt/jboss/.m2</outputDirectory>
+                                                    <includes>
+                                                      <include>settings.xml</include>
+                                                    </includes>
+                                                </fileSet>
+                                                <fileSet>
+                                                    <directory>./local-m2-repository-offliner</directory>
+                                                    <outputDirectory>opt/jboss/.m2/repository</outputDirectory>        
+                                                </fileSet>
+                                            </inline>
+                                        </assembly>
+                                    </build>
+                </image>
+              </images>
+              <generateRoute>true</generateRoute>
+              <enricher>
+                <config>
+                  <f8-healthcheck-spring-boot>
+                    <timeoutSeconds>1</timeoutSeconds>
+                    <readinessProbeInitialDelaySeconds>60</readinessProbeInitialDelaySeconds>
+                    <livenessProbeInitialDelaySeconds>30</livenessProbeInitialDelaySeconds>
+                    <failureThreshold>3</failureThreshold>
+                    <successThreshold>1</successThreshold>
+                  </f8-healthcheck-spring-boot>
+                </config>
+              </enricher>
+              <resources>
+                <annotations>
+                </annotations>
+                <env>
+                   <GC_MAX_METASPACE_SIZE>512</GC_MAX_METASPACE_SIZE>
+                </env>
+                <openshiftBuildConfig>
+                  <requests>
+                    <cpu>500m</cpu>
+                    <memory>1Gi</memory>
+                  </requests>
+                  <limits>
+                    <cpu>500m</cpu>
+                    <memory>1Gi</memory>
+                  </limits>
+                </openshiftBuildConfig>
+                <labels>
+                  <all>
+                    <property>
+                      <name>app</name>
+                      <value>${project.artifactId}</value>
+                    </property>
+                    <property>
+                      <name>version</name>
+                      <value>${project.version}</value>
+                    </property>
+                  </all>
+                </labels>
+              </resources>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
 
   </profiles>
