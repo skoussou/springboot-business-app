@@ -489,7 +489,7 @@
                                         <!--contextDir>${project.basedir}</contextDir-->
 
                                         <dockerFile>Dockerfile</dockerFile>
-                                        <filter>@</filter>
+                                        <!--filter>@</filter>
                                         <assembly>
                                             <mode>dir</mode>
                                             <name>target</name>
@@ -517,7 +517,7 @@
                                                     <outputDirectory>opt/jboss/.m2/repository</outputDirectory>        
                                                 </fileSet>
                                             </inline>
-                                        </assembly>
+                                        </assembly-->
                                     </build>
                 </image>
               </images>
