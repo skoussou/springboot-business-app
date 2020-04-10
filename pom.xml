@@ -489,6 +489,7 @@
                                         <!--contextDir>${project.basedir}</contextDir-->
 
                                         <dockerFile>Dockerfile</dockerFile>
+                                        <pullSecret>pullsecret-fabric8</pullSecret>
                                         <!--filter>@</filter>
                                         <assembly>
                                             <mode>dir</mode>
