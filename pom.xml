@@ -454,6 +454,7 @@
       </build>
     </profile>
 
+
     <profile>
       <id>openshift-docker</id>
       <activation>
