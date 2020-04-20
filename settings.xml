@@ -1,6 +1,7 @@
 <settings>
 	<!--localRepository>/home/stkousso/.m2/local-m2-repository</localRepository-->
-	<localRepository>/home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</localRepository>
+	<!--localRepository>/home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</localRepository-->
+        <localRepository>./local-m2-repository</localRepository>
 
   <servers>
     <server>
@@ -24,6 +25,58 @@
   </servers>
 
   <profiles>
+
+
+
+    <profile>
+      <id>nexus-repository</id>
+      <repositories>
+        <repository>
+          <id>nexus-releases-repository</id>
+          <url>http://nexus-cicd-pam.apps.cluster-rhpam7-6446.rhpam7-6446.example.opentlc.com/repository/maven-releases</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>nexus-snapshots-repository</id>
+          <url>http://nexus-cicd-pam.apps.cluster-rhpam7-6446.rhpam7-6446.example.opentlc.com/repository/maven-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus-releases-plugin-repository</id>
+          <url>http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-releases</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>nexus-snapshots-plugin-repository</id>
+          <url>http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+
     <!-- Configure the JBoss GA Maven repository -->
     <profile>
       <id>jboss-ga-repository</id>
@@ -56,6 +109,7 @@
   </profiles>
   <activeProfiles>
     <!-- Optionally, make the repository active by default -->
+    <activeProfile>nexus-repository</activeProfile>
     <activeProfile>jboss-ga-repository</activeProfile>
   </activeProfiles>
 
