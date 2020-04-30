@@ -8,6 +8,7 @@ COPY business-application-service.xml /deployments/
 COPY src/main/docker opt/jboss/.m2
 COPY ./local-m2-repository-offliner opt/jboss/.m2/repository
 
+
 USER root
 
 RUN chgrp -Rf root /opt/jboss && chmod -Rf g+w /opt/jboss
