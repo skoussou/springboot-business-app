@@ -3,7 +3,7 @@ ENV JAVA_OPTIONS="-Dorg.drools.server.filter.classes=true -Dspring.profiles.acti
 EXPOSE 8090
 #COPY maven /tmp/131cca24-11f4-4387-8ef3-0ef7bbb4a166/
 
-COPY target/business-application-service-2.2.0.jar /deployments/
+COPY target/business-application-service-2.2.1.jar /deployments/
 COPY business-application-service.xml /deployments/
 COPY src/main/docker opt/jboss/.m2
 COPY ./local-m2-repository-offliner opt/jboss/.m2/repository
