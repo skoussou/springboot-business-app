@@ -542,7 +542,8 @@
                 <phase>install</phase>
                 <goals>
                   <goal>resource</goal>
-                  <goal>build</goal>
+		  <goal>build</goal>
+                  <goal>deploy</goal>
                 </goals>
               </execution>
             </executions>
