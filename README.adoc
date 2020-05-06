@@ -27,7 +27,7 @@ image::images/aim.jpg[800,800]
 
 IMPORTANT: Important: Before using note that by default this App provides the minimum configurations. See xref:anchor-2[How To Further Configure the App]
 
-1. _Fork_ this repository for every new service (ie. this is just a baseline)
+1. _Fork_ this repository for every new service (ie. this is just a baseline) and update *pom.xml* with new *GAV*.
 2. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (service-name.xml kie-server-state, application-XXX.properties) based on what is to run)
 * *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
 * *[Parameter 2]* Name of Business Service (will be used for config file, `kieserver.serverId`, `kieserver.Name`)
@@ -54,35 +54,85 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 	mvn spring-boot:run -Dspring-boot.run.profiles=h2 -Dspring-boot.run.jvmArguments="-Dkie.maven.settings.custom=settings-local-only.xml  -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy"
 
-==== Run the service locally as Docker
+==== Run the service locally as Docker container
 
 	TBD
 
-==== Run the service in K8s/Openshift cluster
+==== Run the service in K8s/Openshift cluster (fabric8)
 
-mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
+* Create necessary *mysql* database service dependency (see application-openshift.properties)
+
+	#data source configuration
+	spring.datasource.username=jbpm
+	spring.datasource.password=jbpm
+	spring.datasource.url=jdbc:mysql://pam-mysql:3306/jbpm
+
+	$ oc process mysql-ephemeral --parameters -n openshift
+	NAME                    DESCRIPTION                                                             GENERATOR           VALUE
+	MEMORY_LIMIT            Maximum amount of memory the container can use.                                             512Mi
+	NAMESPACE               The OpenShift Namespace where the ImageStream resides.                                      openshift
+	DATABASE_SERVICE_NAME   The name of the OpenShift Service exposed for the database.                                 mysql
+	MYSQL_USER              Username for MySQL user that will be used for accessing the database.   expression          user[A-Z0-9]{3}
+	MYSQL_PASSWORD          Password for the MySQL connection user.                                 expression          [a-zA-Z0-9]{16}
+	MYSQL_ROOT_PASSWORD     Password for the MySQL root user.                                       expression          [a-zA-Z0-9]{16}
+	MYSQL_DATABASE          Name of the MySQL database accessed.                                                        sampledb
+	MYSQL_VERSION           Version of MySQL image to be used (8.0, or latest).                                         8.0
+
+	$ oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm
+
+
+* Use 'openshift' profile to *Build App*, *Build docker Image*, *Create resoures bc/dc*, *Run build*
+** *Informational Only (RETIRED)*: 
+
+	mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
+
+** Build and deploy in OCP
 
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50
 	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50
 
 	
-WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find in the DeploymentConfig
+	WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find in the DeploymentConfig
+			  env:
+			    - name: GC_MAX_METASPACE_SIZE
+			      value: '512'
 
-	          env:
-	            - name: GC_MAX_METASPACE_SIZE
-	              value: '512'
+	and append
+			  env:
+			    - name: GC_MAX_METASPACE_SIZE
+			      value: '512'
+			  env:
+			    - name: JAVA_OPTIONS
+			      value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
 
-and append
 
-	          env:
-	            - name: GC_MAX_METASPACE_SIZE
-	              value: '512'
-	          env:
-	            - name: JAVA_OPTIONS
-	              value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
+	(01/05/2020) also latest weird issue is I had to add in created DC the image registry where the generated ImageStream "business-application-service" points for the image as otherwise POD failed to pull looking at docker.io for it
+	mvn fabric8:deploy -Dfabric8.namespace=test-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50  -s settings-nexus.xml
+
+** expose service route
+
+	oc expose svc business-application-service 
+
+** Get to Swagger API
+
+	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
+
+curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-application-service-test-pam.apps.cluster-workshop-07d8.workshop-07d8.example.opentlc.com/rest/server/containers'
+
 
 
 == How To Use (CICD)
+
+* OCP Setups if working on your own Cluster
+** edit role binded to *cicd-apm* group or to group which is used in the CICD Jenkins namespace to be able to *_edit_* the namespace where buildsConfigs, deploymentConfigs, builds etc. will be added
+
+	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam -n test-pipeline
+
+** have a secret containing the *redhat.registry.io* credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
+
+	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson
+
+** associate the secret in the +namespace+ which will receive the Jenkinspipeline builds and will pull images/create new images
 
 git clone https://github.com/ippul/offliner-maven-plugin.git
 
