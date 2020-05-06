@@ -127,7 +127,7 @@ curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-
 * OCP Secrets/ServiceAccount Setups if working on your own Cluster
 ** edit role binded to *cicd-apm* group or to group which is used in the CICD Jenkins namespace to be able to *_edit_* the namespace where buildsConfigs, deploymentConfigs, builds etc. will be added
 
-	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam -n test-pipeline
+	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam
 
 ** have a secret containing the *redhat.registry.io* credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
 
@@ -135,8 +135,8 @@ curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-
 
 ** associate the _imagestreamsecret_, within the namespace which will receive the _Jenkinspipeline_ builds and will pull images/create new images, with the relevant *_serviceaccount_*
 
-	default
-        oc secrets link default imagestreamsecret --for=pull
+        oc secrets link builder imagestreamsecret --for=pull
+        oc secrets link builder imagestreamsecret
 
 git clone https://github.com/ippul/offliner-maven-plugin.git
 
