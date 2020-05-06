@@ -133,7 +133,7 @@ curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-
 
 	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson
 
-** associate the _imagestreamsecret_, within the namespace which will receive the _Jenkinspipeline_ builds and will pull images/create new images, with the relevant *_serviceaccount_*
+** associate the _imagestreamsecret_, within the namespace which will receive the _Jenkinspipeline_ builds and will be required to pull images/create new images, with the relevant *_serviceaccount_*
 
         oc secrets link builder imagestreamsecret --for=pull
         oc secrets link builder imagestreamsecret
