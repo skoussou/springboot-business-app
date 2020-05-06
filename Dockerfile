@@ -5,8 +5,8 @@ EXPOSE 8090
 
 COPY target/business-application-service-2.2.5.jar /deployments/
 COPY business-application-service.xml /deployments/
-COPY ./src/main/docker /opt/jboss/.m2
-COPY ./local-m2-repository-offliner /opt/jboss/.m2/repository
+COPY ./src/main/docker/settings.xml /opt/jboss/.m2/settings.xml
+COPY local-m2-repository-offliner /opt/jboss/.m2/repository
 
 
 USER root
