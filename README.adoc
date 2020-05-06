@@ -138,7 +138,16 @@ curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-
         oc secrets link builder imagestreamsecret --for=pull
         oc secrets link builder imagestreamsecret
 
-git clone https://github.com/ippul/offliner-maven-plugin.git
+
+
+== Plugin for building KJAR Dependencies
+
+* The plugin will build KJAR dependencies to be includd in the image
+
+	git clone https://github.com/ippul/offliner-maven-plugin.git
+	cd offliner-maven-plugin
+	mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
+
 
 
 
