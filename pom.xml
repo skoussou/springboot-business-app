@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat</groupId>
   <artifactId>business-application-service</artifactId>
-  <version>2.2.5</version>
+  <version>2.2.6</version>
   <packaging>jar</packaging>
   <name>business-application-service</name>
 
@@ -76,7 +76,7 @@
              <version>1.0-SNAPSHOT</version>
              <executions>
                 <execution>
-                   <phase>prepare-package</phase>
+                  <phase>prepare-package</phase>
                    <goals>
                       <goal>offliner</goal>
                    </goals>
@@ -98,73 +98,75 @@
   </build>
 
   <profiles>  
-    
-<profile>
-  <id>offliner</id>
-  <activation>
-    <activeByDefault>true</activeByDefault>
-  </activation>
-  <dependencies>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-    </dependency>
-  </dependencies>
-</profile>
+
+    <!-- Use to test offliner functionality for building local KJAR dependencies repository. May need to change <phase> in <build> to "compile" -->	  
+    <profile>
+      <id>offliner</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
 
 
-<profile>
-  <id>h2</id>
-  <activation>
-    <activeByDefault>true</activeByDefault>
-  </activation>
-  <dependencies>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-    </dependency>
-  </dependencies>
-</profile>
+    <!-- Profiles with local Springboot Runtime based on Database -->	    
+    <profile>
+      <id>h2</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
 
-<profile>
-  <id>mysql</id>
-  <activation>
-    <property>
-      <name>mysql</name>
-    </property>
-  </activation>
-  <dependencies>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</profile>
+    <profile>
+      <id>mysql</id>
+      <activation>
+        <property>
+          <name>mysql</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
 
-<profile>
-  <id>postgres</id>
-  <activation>
-    <property>
-      <name>postgres</name>
-    </property>
-  </activation>
-  <dependencies>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</profile>
+    <profile>
+      <id>postgres</id>
+      <activation>
+        <property>
+          <name>postgres</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
         
     <profile>
       <id>docker</id>
@@ -241,6 +243,10 @@
         </property>
       </activation>
 
+
+
+
+      <!-- Cloud Profiles - Openshift used with command line fabric8 tested and working. See README.adoc -->
       <properties>
         <fabric8.mode>openshift</fabric8.mode>
         <fabric8.build.strategy>docker</fabric8.build.strategy>
@@ -455,6 +461,7 @@
     </profile>
 
 
+    <!-- Cloud Profiles - Openshift with Dockerfile 'install' phase, tested and working. See README.adoc -->	    
     <profile>
       <id>openshift-docker</id>
       <activation>
@@ -466,7 +473,6 @@
       <properties>
         <fabric8.mode>openshift</fabric8.mode>
         <fabric8.build.strategy>docker</fabric8.build.strategy>
-        <fabric8.build.pullSecret>imagestreamsecret</fabric8.build.pullSecret>
       </properties>
 
       <dependencies>

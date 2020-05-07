@@ -1,0 +1,105 @@
+// global variables
+git_bussiness_app_project_repo="https://github.com/skoussou/springboot-business-app.git"
+git_bussiness_app_project_branch = "master"
+
+
+
+
+// namespaces
+// WORKS HERE after SA / SECRET changes to default SA and Builder SA def namespace_dev = "dev-pam"
+namespace_dev = "test-pipeline-2"
+def namespace_acp = "dev-stage"
+//def namespace_prd = "dev-prod"	
+
+@NonCPS
+def get_params(filename){
+    def file = "${WORKSPACE}/${filename}"
+    def content = readFile(file)
+    println "filename ==> $filename"
+    println "file ==> $file"
+    println "content ==> $content"
+    
+
+    //def values = "value1\nvalue2"
+    //new File(file).eachLine { line -> println "line: $line" }
+    return content
+    //return lines
+}
+
+
+pipeline {
+    
+    //agent none
+    agent {
+        label 'maven'
+    }
+    
+    stages {
+        stage('Checkout Business App') {
+          //agent {
+          //  label 'maven'
+          //}
+            steps {
+                 //step([$class: 'WsCleanup'])
+    			 git(
+    			   url: "${git_bussiness_app_project_repo}",
+    			   //credentialsId: 'bitbucket', // from credentials.xml in Jenkins
+    			   branch: "${git_bussiness_app_project_branch}"
+    			 )
+                 script {
+                   echo "#############################################################################################"     
+                   echo "#                                                                                           #"
+                   echo "#           Checking versions of tooling used for Java/Maven                                #"
+                   echo "#                                                                                           #"                   
+                   echo "#############################################################################################"                        
+                   //withMaven(
+    			   //  maven: 'maven-3'
+    				//mavenSettingsConfig: 'poc-maven-settings'	// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
+    			   //) 
+                   sh "pwd"
+    			   sh "mvn --version"
+    			   sh "apache-maven-3.6.2/bin/mvn --version"
+    			   
+                   echo "#############################################################################################"     
+                   echo "#                                                                                           #"
+                   echo "#           Build KJARs Maven Dependencies local Repository                                 #"
+                   echo "#                                                                                           #"                   
+                   echo "#############################################################################################"       			   
+    			   
+                   sh "apache-maven-3.6.2/bin/mvn clean package -DskipTests=true  -P openshift-docker -Dmaven.artifact.threads=50 -s settings-nexus.xml"
+                   sh "ls -la local-m2-repository-offliner/com/redhat"
+                   sh "tree local-m2-repository-offliner/com/redhat"
+
+                 }
+            }
+        }
+        stage("Build into Dev Namespace") {
+           // agent any
+            steps {
+                script {
+                    openshift.withCluster( 'mytempcloudcluster', 'rhn-gps-stkousso' ) {
+                        echo "Hello from ${openshift.cluster()}'s default project: ${openshift.project()}"
+        
+                        // But we can easily change project contexts
+                        openshift.withProject( "$namespace_dev" ) {
+                            echo "Creating and Running build in project: ${openshift.project()}"
+                            script {                        
+
+                            sh "ls -la"
+
+                                sh "pwd"
+
+                                //sh "apache-maven-3.6.2/bin/mvn fabric8:build -Dfabric8.namespace=$namespace_dev -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml  -X"
+                                sh "apache-maven-3.6.2/bin/mvn install -Dfabric8.namespace=$namespace_dev -DskipTests=true -P openshift-docker -Dmaven.artifact.threads=50 -s settings-nexus.xml  -X"
+                                //sh "oc start-build business-application-service --from-dir=. -n $namespace_dev"
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+

@@ -40,11 +40,24 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 	curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://127.0.0.1:8090/rest/server/containers'
 	curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers'
 
+* Find Process IDs in KIEContainer
+
+	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/{ALIAS or CONTAINERID}/processes/" -H "accept: application/json"
+
+
+* Find Process Details(eg. process Variables) based on Process ID
+
+	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/containers/{ALIAS or CONTAINERID}/processes/definitions/{ProcessID}" -H "accept: application/json"
+
 * Start Process
 
-	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/[YOUR-ALIAS]/processes/[YOUR-PROCESS-ID]/instances'
+	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/{ALIAS or CONTAINERID}/processes/{ProcessID}/instances'
 	eg. curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://127.0.0.1:8090/rest/server/containers/retail/processes/my-process/instances'
 	curl -u 'user:user' -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{}' 'http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/basic-kjar-2.0.0/processes/my-process/instances'
+
+* Retrieve instances of processes in KIEContainer (status 1=Active, 2=Completed, 3=Error)
+
+	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/{CONTAINER_ID}/processes/instances?status=2&page=0&pageSize=10&sortOrder=true" -H "accept: application/json" -H "content-type: application/json"
 
 
 [[anchor-1]]
