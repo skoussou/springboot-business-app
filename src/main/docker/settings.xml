@@ -4,7 +4,7 @@
                       http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
   <localRepository>/opt/jboss/.m2/repository</localRepository>	
-  <offline>true</offline>
+  <!--offline>true</offline-->
 
   <profiles>
     <!-- Configure the JBoss GA Maven repository -->
