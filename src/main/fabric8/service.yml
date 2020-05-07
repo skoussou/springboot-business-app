@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: business-application-service
+  labels:
+    app: business-application-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+  selector:
+    app: business-application-service
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}
+

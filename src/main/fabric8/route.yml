@@ -1,0 +1,9 @@
+apiVersion: route.openshift.io/v1
+spec:
+  to:
+    kind: Service
+    name: business-application-service
+    weight: 100        
+  port:
+    targetPort: 8090
+
