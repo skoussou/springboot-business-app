@@ -1,5 +1,6 @@
 <settings>
-	<localRepository>/home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</localRepository>
+  <!--localRepository>/home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</localRepository-->
+  <localRepository>./local-m2-repository-offliner</localRepository>
 
   <profiles>
     <!-- Configure the JBoss GA Maven repository -->
@@ -8,7 +9,7 @@
       <repositories>
         <repository>
           <id>local-m2-repository</id>
-          <url>file:///home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</url>
+          <url>file:///home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository-offliner</url>
           <!--url>file:///home/stkousso/.m2/local-m2-repository</url-->
           <releases>
             <enabled>true</enabled>
@@ -23,7 +24,7 @@
       <pluginRepositories>
         <pluginRepository>
           <id>local-m2-repository-plugins</id>
-          <url>file:///home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository</url>
+          <url>file:///home/stkousso/Stelios/sw11/git/PAM/start-business-apps/springboot-business-app/local-m2-repository-offliner</url>
           <!--url>file:///home/stkousso/.m2/local-m2-repository</url-->
           <releases>
             <enabled>true</enabled>
@@ -37,10 +38,40 @@
       </pluginRepositories>
     </profile>
 
+    <!-- Configure the JBoss GA Maven repository -->
+    <profile>
+      <id>jboss-ga-repository</id>
+      <repositories>
+        <repository>
+          <id>jboss-ga-repository</id>
+          <url>https://maven.repository.redhat.com/ga</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>jboss-ga-repository</id>
+          <url>http://maven.repository.redhat.com/ga</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
   </profiles>
   <activeProfiles>
     <!-- Optionally, make the repository active by default -->
     <activeProfile>local-m2-repository</activeProfile>
+    <activeProfile>jboss-ga-repository</activeProfile>
   </activeProfiles>
 
 
