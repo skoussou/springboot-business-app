@@ -23,13 +23,47 @@ image::images/aim.jpg[800,800]
 * 4. - *MUST:* to Have: I would like to have Monitoring via RHPAM Monitor/Business Central possible)
 * 5. - *MUST:* to Have: I would like to ???
 
-== How To Use
+* CICD requirements to satisfy
+** a) To install the KJARs in NEXUS server (normal CICD Lifecycle each KJAR has its own pipeline for release)
+** b) To configure the Springboot Service App with settings.xml pointing to the repos where KJARs can be found
+** c) To configure the Springboot Service App with the correct kie-server-state file (maybe automate)
+** d) To give the repos of the KJARs to build a maven repo for their dependencies
+** Steps
+*** - prepare local-m2-repo based on KJARs to load containers for
+*** - pull built KJARs from NEXUS (that is important since there may be more than 1 version of the same KJAR and can't build all) and save into local-m2-repo
+*** - build the springboot app
+*** - load everything into image
 
-IMPORTANT: Important: Before using note that by default this App provides the minimum configurations for SpringBoot KJAR Service. See xref:anchor-2[How To Further Configure the App]
+
+
+== How To Use
+[[anchor-1]]
+IMPORTANT: Important: Before using note that by default this App provides the minimum configurations for SpringBoot KJAR Service. See xref:anchor-7[How To Further Configure the App]
 
 1. _Fork_ this repository for every new service (ie. this is just a baseline) and update *pom.xml* with new *GAV*.
-2. Build and install in your local/central MAVEN repository See xref:anchor-4[Plugin for building KJAR Dependencies]
-3. Configure in pom.xml the KJARs you plan to deploy in your service (KJARs need to be deployed in NEXUS if using a central maven repo)
+2. Build and install in your local/central MAVEN repository the xref:anchor-5[Plugin for building KJAR Dependencies]
+
+== How To Use as locally Springboot App
+[[anchor-2]]
+1. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (`your-service-name.xml` kie-server-state, `application-XXX.properties`) based on what is to run
+* *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
+* *[Parameter 2]* Name of Business Service (will be used for `kie-server-state` config file name, `application-xxx.properties` configurations `kieserver.serverId`, `kieserver.Name`)
+2. Run the Service as local SpringBoot App and xref:anchor-7[Use the KJAR Springboot Service APIs]
+* No external DB dependencies
+
+	mvn spring-boot:run -Dspring-boot.run.profiles=h2 -Dspring-boot.run.jvmArguments="-Dkie.maven.settings.custom=settings-local-only.xml  -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy"
+
+* use *-Dspring-boot.run.profiles=mysql* and *-P mysql* to use with an external Mysql database and update *_src/main/resources/application-mysql.properties_* with DB connection details
+* use *-Dspring-boot.run.profiles=postgres* and *-P postgres* to use with an external PostgresSQL database and update *_src/main/resources/application-postgres.properties_* with DB connection details
+
+
+== How To Use as locally as Docker container
+[[anchor-3]]
+	TBD
+
+== How To Use in Openshift 
+[[anchor-4]]
+1. Configure in `pom.xml` the KJARs you plan to deploy in your service (KJARs need to be deployed in NEXUS if using a central maven repo)
 
 	<artifacts>
             <gav>com.redhat:basic-kjar:1.0.0</gav>
@@ -37,19 +71,91 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
             <gav>com.redhat:example-retail-credit-kjar:1.0.0</gav>
         </artifacts>
 
+2. Configure `your-service-name.xml`_ (see `business-application-service.xml` as an example and must match `application-openshift.properties` properties `kieserver.serverId`, `kieserver.Name`) 
+* one *<container>* for each KJAR above
+
+3. Configure database connection details in `application-openshift.properties` to connect to either an _external database_ or create a MySQL database service in openshift 
+
+* Create necessary *mysql* database service dependency (see `application-openshift.properties`)
+
+	#data source configuration
+	spring.datasource.username=jbpm
+	spring.datasource.password=jbpm
+	spring.datasource.url=jdbc:mysql://pam-mysql:3306/jbpm
+
+	$ oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm
 
 
-== How To Use (non-CICD)
+=== Run the service in K8s/Openshift cluster (fabric8) - NON-CICD
 
-IMPORTANT: Important: Before using note that by default this App provides the minimum configurations. See xref:anchor-2[How To Further Configure the App]
+4. Use the *openshift* profile to *Build App*, *Build KJAR Maven Dependencies Repo* *Build Image with Repo*, *Create resoures bc/dc*
+** Build and deploy in OCP
 
-3. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (service-name.xml kie-server-state, application-XXX.properties) based on what is to run)
-* *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
-* *[Parameter 2]* Name of Business Service (will be used for config file, `kieserver.serverId`, `kieserver.Name`)
+	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
+	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 
-	./JenkinspipelineBatch.sh basic#PER_PROCESS_INSTANCE#https://github.com/skoussou/basic-kjar,retail#PER_CASE#https://github.com/skoussou/example-retail-credit-kjar onboarding-service
+	
+	WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find in the DeploymentConfig
+			  env:
+			    - name: GC_MAX_METASPACE_SIZE
+			      value: '512'
 
-3. Run the Service as xref:anchor-1[How to run the Sprinboot Service] and then Use the API
+	and append
+			  env:
+			    - name: GC_MAX_METASPACE_SIZE
+			      value: '512'
+			  env:
+			    - name: JAVA_OPTIONS
+			      value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
+
+
+	(01/05/2020) also latest weird issue is I had to add in created DC the image registry where the generated ImageStream "business-application-service" points for the image as otherwise POD failed to pull looking at docker.io for it
+	mvn fabric8:deploy -Dfabric8.namespace=test-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50  -s settings-nexus.xml
+
+	It is due to deployment.yml which doesn't have the image part (test again now that I have put it as deployment.txt)
+
+4.  expose service route
+
+	oc expose svc business-application-service 
+
+5.  Get to Swagger API and xref:anchor-7[Use the KJAR Springboot Service APIs]
+
+	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
+
+
+=== Run the Service (CICD) in Openshift
+
+1. OCP Secrets/ServiceAccount Setups if working on your own Cluster
+* Bind *_edit_* role to *cicd-pam* group or to group which is used in the CICD Jenkins namespace to be able to *_edit_* the namespace where buildsConfigs, deploymentConfigs, builds etc. will be configured in
+
+	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam
+
+* have a secret containing the *redhat.registry.io* credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
+
+	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson
+
+* associate the _imagestreamsecret_, within the namespace which will receive the _Jenkinspipeline_ builds and will be required to pull images/create new images, with the relevant *_serviceaccount_*
+
+        oc secrets link builder imagestreamsecret --for=pull
+        oc secrets link builder imagestreamsecret
+
+2. Add the *Jenkinsfile* in your Jenkins and configure the parameters at the top of the file to the correct namespaces
+
+3.  Get to Swagger API and xref:anchor-7[Use the KJAR Springboot Service APIs]
+
+	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
+
+[[anchor-5]]
+== Plugin for building KJAR Dependencies
+
+* The plugin will build KJAR dependencies
+
+	git clone https://github.com/ippul/offliner-maven-plugin.git
+	cd offliner-maven-plugin
+	mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
+
+
+[[anchor-6]]
 * Get Containers List
 
 	curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://127.0.0.1:8090/rest/server/containers'
@@ -75,126 +181,15 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/{CONTAINER_ID}/processes/instances?status=2&page=0&pageSize=10&sortOrder=true" -H "accept: application/json" -H "content-type: application/json"
 
 
-[[anchor-1]]
-=== How to run the Springboot Service
 
-==== Run the service locally via Maven
+[[anchor-7]]
+== How To Further Configure the App
 
-* No external DB dependencies
+1. Security (Adding Users/External Security)
+2. Database
+3. Timers
+4. APIs
 
-	mvn spring-boot:run -Dspring-boot.run.profiles=h2 -Dspring-boot.run.jvmArguments="-Dkie.maven.settings.custom=settings-local-only.xml  -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy"
-
-* use *-Dspring-boot.run.profiles=mysql* and *-P mysql* to use with an external Mysql database and update *_src/main/resources/application-mysql.properties_* with DB connection details
-* use *-Dspring-boot.run.profiles=postgres* and *-P postgres* to use with an external PostgresSQL database and update *_src/main/resources/application-postgres.properties_* with DB connection details
-
-==== Run the service locally as Docker container
-
-	TBD
-
-==== Run the service in K8s/Openshift cluster (fabric8)
-[[anchor-3]]
-* Create necessary *mysql* database service dependency (see application-openshift.properties)
-
-	#data source configuration
-	spring.datasource.username=jbpm
-	spring.datasource.password=jbpm
-	spring.datasource.url=jdbc:mysql://pam-mysql:3306/jbpm
-
-	$ oc process mysql-ephemeral --parameters -n openshift
-	NAME                    DESCRIPTION                                                             GENERATOR           VALUE
-	MEMORY_LIMIT            Maximum amount of memory the container can use.                                             512Mi
-	NAMESPACE               The OpenShift Namespace where the ImageStream resides.                                      openshift
-	DATABASE_SERVICE_NAME   The name of the OpenShift Service exposed for the database.                                 mysql
-	MYSQL_USER              Username for MySQL user that will be used for accessing the database.   expression          user[A-Z0-9]{3}
-	MYSQL_PASSWORD          Password for the MySQL connection user.                                 expression          [a-zA-Z0-9]{16}
-	MYSQL_ROOT_PASSWORD     Password for the MySQL root user.                                       expression          [a-zA-Z0-9]{16}
-	MYSQL_DATABASE          Name of the MySQL database accessed.                                                        sampledb
-	MYSQL_VERSION           Version of MySQL image to be used (8.0, or latest).                                         8.0
-
-	$ oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm
-
-
-* Use 'openshift' profile to *Build App*, *Build docker Image*, *Create resoures bc/dc*, *Run build*
-** *Informational Only (RETIRED)*: 
-
-	mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
-
-** Build and deploy in OCP
-
-	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50
-	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50
-
-	
-	WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find in the DeploymentConfig
-			  env:
-			    - name: GC_MAX_METASPACE_SIZE
-			      value: '512'
-
-	and append
-			  env:
-			    - name: GC_MAX_METASPACE_SIZE
-			      value: '512'
-			  env:
-			    - name: JAVA_OPTIONS
-			      value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
-
-
-	(01/05/2020) also latest weird issue is I had to add in created DC the image registry where the generated ImageStream "business-application-service" points for the image as otherwise POD failed to pull looking at docker.io for it
-	mvn fabric8:deploy -Dfabric8.namespace=test-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50  -s settings-nexus.xml
-
-** expose service route
-
-	oc expose svc business-application-service 
-
-** Get to Swagger API
-
-	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
-
-curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-application-service-test-pam.apps.cluster-workshop-07d8.workshop-07d8.example.opentlc.com/rest/server/containers'
-
-
-
-== How To Use (CICD) in Openshift
-
-* Configure database connection details in *_application-openshift.properties_* to connect to either an _external database_ or create a MySQL database service in openshift (See xref:anchor-3[How To Configure Database Connection/Service]
-* OCP Secrets/ServiceAccount Setups if working on your own Cluster
-** Bind *_edit_* role to *cicd-pam* group or to group which is used in the CICD Jenkins namespace to be able to *_edit_* the namespace where buildsConfigs, deploymentConfigs, builds etc. will be configured in
-
-	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam
-
-** have a secret containing the *redhat.registry.io* credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
-
-	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson
-
-** associate the _imagestreamsecret_, within the namespace which will receive the _Jenkinspipeline_ builds and will be required to pull images/create new images, with the relevant *_serviceaccount_*
-
-        oc secrets link builder imagestreamsecret --for=pull
-        oc secrets link builder imagestreamsecret
-
-
-[[anchor-4]]
-== Plugin for building KJAR Dependencies
-
-* The plugin will build KJAR dependencies
-
-	git clone https://github.com/ippul/offliner-maven-plugin.git
-	cd offliner-maven-plugin
-	mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
-
-
-
-
-
-* CICD requirements to satisfy
-** a) To install the KJARs in NEXUS server (normal CICD Lifecycle each KJAR has its own pipeline for release)
-** b) To configure the Springboot Service App with settings.xml pointing to the repos where KJARs can be found
-** c) To configure the Springboot Service App with the correct kie-server-state file (maybe automate)
-** d) To give the repos of the KJARs to build a maven repo for their dependencies
-** Steps
-*** - prepare local-m2-repo based on KJARs to load containers for
-*** - pull built KJARs from NEXUS (that is important since there may be more than 1 version of the same KJAR and can't build all) and save into local-m2-repo
-*** - build the springboot app
-*** - load everything into image
 
 === Docs on Openshift DSL Pipeline creation
 
@@ -205,18 +200,6 @@ curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://business-
 openshift.withCluster( 'mytempcloudcluster' ) {
     // ... operations relative to this cluster ...
 }
-
-
-[[anchor-2]]
-== How To Further Configure the App
-
-1. Security (Adding Users/External Security)
-2. Database
-3. Timers
-4. APIs
-
-
-
 
 
 
