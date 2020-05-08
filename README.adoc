@@ -36,7 +36,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 1. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (`your-service-name.xml` kie-server-state, `application-XXX.properties`) based on what is to run
 * *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
 * *[Parameter 2]* Name of Business Service (will be used for `kie-server-state` config file name, `application-xxx.properties` configurations `kieserver.serverId`, `kieserver.Name`)
-2. Run the Service as local SpringBoot App and xref:anchor-7[Use the KJAR Springboot Service APIs]
+2. Run the Service as local SpringBoot App and xref:anchor-6[Use the KJAR Springboot Service APIs]
 * No external DB dependencies
 
 	mvn spring-boot:run -Dspring-boot.run.profiles=h2 -Dspring-boot.run.jvmArguments="-Dkie.maven.settings.custom=settings-local-only.xml  -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy"
@@ -106,7 +106,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 	oc expose svc business-application-service 
 
-5.  Get to Swagger API and xref:anchor-7[Use the KJAR Springboot Service APIs]
+5.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
 
@@ -129,7 +129,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 2. Add the *Jenkinsfile* in your Jenkins and configure the parameters at the top of the file to the correct namespaces
 
-3.  Get to Swagger API and xref:anchor-7[Use the KJAR Springboot Service APIs]
+3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
 
@@ -144,6 +144,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 
 
 [[anchor-6]]
+== KJAR Springboot Service APIs
 * Get Containers List
 
 	curl -u 'user:user' -X GET --header 'Accept: application/json' 'http://127.0.0.1:8090/rest/server/containers'
