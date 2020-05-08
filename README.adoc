@@ -140,8 +140,8 @@ first start at xref:anchor-4[How To Use in Openshift]
         oc secrets link builder imagestreamsecret --for=pull
         oc secrets link builder imagestreamsecret
 
-2. Add the *Jenkinsfile* in your Jenkins and configure the parameters at the top of the file to the correct namespaces
-4. Updates to pom.xml require updates of version in `Dockerfile` version 
+2. Add a Jenkins job baed on the *Jenkinsfile* in this repository in your Jenkins and configure the parameters at the top of the file to the correct namespaces
+4. Updates to `pom.xml` require updates of version in `Dockerfile` version 
 3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
