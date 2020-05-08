@@ -12,28 +12,16 @@ image::images/aim.jpg[800,800]
 
 1. *MUST:* be possible to load/expose a KJAR (KieContainer) by simply giving a GIT repository
 2. *MUST:* Absolute minimum dependencies must be https://maven.repository.redhat.com/ga[Red Hat public maven artifacts] and availability of http://maven.apache.org/download.cgi?Preferred=ftp://mirror.reverse.net/pub/apache/[maven binary] 
-3. *MUST:* 
-4. *MUST:*
-5. *MUST:*
-6. *MUST:*
+3. *MUST:* I want to not be hindered by environmental dependencies what are these? (DB, NEXUS, ALL NEXUS Dependencies require in the image, Security for roles) in trying this out
+4. *Nice to Have:* I would like to have the option to externalize DB (with minimum -maven/springboot profile-)
+5. *Nice to Have:* I would like to have Monitoring via RHPAM Monitor/Business Central possible)
 
-* 1. - *MUST:* I want to not be hindered by environmental dependencies what are these? (DB, NEXUS, ALL NEXUS Dependencies require in the image, Security for roles)
-* 2. - *MUST:* I want to not be hindered by environmental dependencies running it (docker, kubernetes, openshift should be the same)
-* 3. - *MUST:* to Have: I would like to have the option to externalize DB (with minimum -maven/springboot profile-)
-* 4. - *MUST:* to Have: I would like to have Monitoring via RHPAM Monitor/Business Central possible)
-* 5. - *MUST:* to Have: I would like to ???
 
 * CICD requirements to satisfy
 ** a) To install the KJARs in NEXUS server (normal CICD Lifecycle each KJAR has its own pipeline for release)
 ** b) To configure the Springboot Service App with settings.xml pointing to the repos where KJARs can be found
 ** c) To configure the Springboot Service App with the correct kie-server-state file (maybe automate)
-** d) To give the repos of the KJARs to build a maven repo for their dependencies
-** Steps
-*** - prepare local-m2-repo based on KJARs to load containers for
-*** - pull built KJARs from NEXUS (that is important since there may be more than 1 version of the same KJAR and can't build all) and save into local-m2-repo
-*** - build the springboot app
-*** - load everything into image
-
+** d) To include the repo of dependencies in for KJARs in the image
 
 
 == How To Use
@@ -57,7 +45,7 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 * use *-Dspring-boot.run.profiles=postgres* and *-P postgres* to use with an external PostgresSQL database and update *_src/main/resources/application-postgres.properties_* with DB connection details
 
 
-== How To Use as locally as Docker container
+== How To Use as local Docker container
 [[anchor-3]]
 	TBD
 
