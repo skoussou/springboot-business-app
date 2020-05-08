@@ -60,16 +60,18 @@ first start at xref:anchor-1[How To Use this Repo]
 
 1. Configure in `pom.xml` the KJARs you plan to deploy in your service (KJARs need to be deployed in NEXUS if using a central maven repo)
 
-	<artifacts>
+        <artifacts>
             <gav>com.redhat:basic-kjar:1.0.0</gav>
             <gav>com.redhat:basic-kjar:2.0.0</gav>
             <gav>com.redhat:example-retail-credit-kjar:1.0.0</gav>
         </artifacts>
 
-2. Configure `your-service-name.xml`_ (see `business-application-service.xml` as an example and must match `application-openshift.properties` properties `kieserver.serverId`, `kieserver.Name`) 
+2. Configure `your-service-name.xml` (see `business-application-service.xml` as an example and must match `application-openshift.properties` properties `kieserver.serverId`, `kieserver.Name`) 
 * one *<container>* for each KJAR above
 
-3. Configure database connection details in `application-openshift.properties` to connect to either an _external database_ or create a MySQL database service in openshift 
+3. Configure the `artifactId` in the `Dockerfile` along with the version
+
+4. Configure database connection details in `application-openshift.properties` to connect to either an _external database_ or create a MySQL database service in openshift 
 
 * Create necessary *mysql* database service dependency (see `application-openshift.properties`)
 
@@ -85,7 +87,7 @@ first start at xref:anchor-1[How To Use this Repo]
 
 first start at xref:anchor-4[How To Use in Openshift]
 
-4. Use the *openshift* profile to *Build App*, *Build KJAR Maven Dependencies Repo* *Build Image with Repo*, *Create resoures bc/dc*
+1. Use the *openshift* profile to *Build App*, *Build KJAR Maven Dependencies Repo* *Build Image with Repo*, *Create resoures bc/dc*
 ** Build and deploy in OCP
 
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
@@ -111,11 +113,11 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 	It is due to deployment.yml which doesn't have the image part (test again now that I have put it as deployment.txt)
 
-4.  expose service route
+2.  expose service route
 
 	oc expose svc business-application-service 
 
-5.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
+3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
 
@@ -139,7 +141,7 @@ first start at xref:anchor-4[How To Use in Openshift]
         oc secrets link builder imagestreamsecret
 
 2. Add the *Jenkinsfile* in your Jenkins and configure the parameters at the top of the file to the correct namespaces
-
+4. Updates to pom.xml require updates of version in `Dockerfile` version 
 3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
@@ -191,15 +193,13 @@ first start at xref:anchor-4[How To Use in Openshift]
 4. APIs
 
 
-=== Docs on Openshift DSL Pipeline creation
+Resources: Docs on Openshift DSL Pipeline creation
 
 * Logging into cluster https://github.com/jenkinsci/openshift-client-plugin#configuring-an-openshift-cluster[via openshift.withCluster] 
 
-
-
-openshift.withCluster( 'mytempcloudcluster' ) {
-    // ... operations relative to this cluster ...
-}
+	openshift.withCluster( 'mytempcloudcluster' ) {
+	    // ... operations relative to this cluster ...
+	}
 
 
 
