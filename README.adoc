@@ -24,15 +24,18 @@ image::images/aim.jpg[800,800]
 ** d) To include the repo of dependencies in for KJARs in the image
 
 
-== How To Use
+== How To Use this Repo
 [[anchor-1]]
 IMPORTANT: Important: Before using note that by default this App provides the minimum configurations for SpringBoot KJAR Service. See xref:anchor-7[How To Further Configure the App]
 
 1. _Fork_ this repository for every new service (ie. this is just a baseline) and update *pom.xml* with new *GAV*.
 2. Build and install in your local/central MAVEN repository the xref:anchor-5[Plugin for building KJAR Dependencies]
 
-== How To Use as locally Springboot App
+=== How To Use as locally Springboot App
 [[anchor-2]]
+
+first start at xref:anchor-1[How To Use this Repo]
+
 1. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (`your-service-name.xml` kie-server-state, `application-XXX.properties`) based on what is to run
 * *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
 * *[Parameter 2]* Name of Business Service (will be used for `kie-server-state` config file name, `application-xxx.properties` configurations `kieserver.serverId`, `kieserver.Name`)
@@ -45,12 +48,16 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 * use *-Dspring-boot.run.profiles=postgres* and *-P postgres* to use with an external PostgresSQL database and update *_src/main/resources/application-postgres.properties_* with DB connection details
 
 
-== How To Use as local Docker container
+=== How To Use as local Docker container
 [[anchor-3]]
 	TBD
 
-== How To Use in Openshift 
+
+=== How To Use in Openshift 
 [[anchor-4]]
+
+first start at xref:anchor-1[How To Use this Repo]
+
 1. Configure in `pom.xml` the KJARs you plan to deploy in your service (KJARs need to be deployed in NEXUS if using a central maven repo)
 
 	<artifacts>
@@ -74,7 +81,9 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 	$ oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm
 
 
-=== Run the service in K8s/Openshift cluster (fabric8) - NON-CICD
+==== Run the service in K8s/Openshift cluster (fabric8) - NON-CICD
+
+first start at xref:anchor-4[How To Use in Openshift]
 
 4. Use the *openshift* profile to *Build App*, *Build KJAR Maven Dependencies Repo* *Build Image with Repo*, *Create resoures bc/dc*
 ** Build and deploy in OCP
@@ -111,7 +120,9 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
 
 
-=== Run the Service (CICD) in Openshift
+==== Run the Service (CICD) in Openshift
+
+first start at xref:anchor-4[How To Use in Openshift]
 
 1. OCP Secrets/ServiceAccount Setups if working on your own Cluster
 * Bind *_edit_* role to *cicd-pam* group or to group which is used in the CICD Jenkins namespace to be able to *_edit_* the namespace where buildsConfigs, deploymentConfigs, builds etc. will be configured in
