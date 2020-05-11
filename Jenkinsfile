@@ -2,17 +2,15 @@
 git_bussiness_app_project_repo="https://github.com/skoussou/springboot-business-app.git"
 git_bussiness_app_project_branch = "master"
 
-
-
-
 // namespaces
-// WORKS HERE after SA / SECRET changes to default SA and Builder SA def namespace_dev = "dev-pam"
-namespace_dev = "dev-pam"
-def namespace_acp = "dev-stage"
-//def namespace_prd = "dev-prod"	
+namespace_dev = "dev-pam-pipeline"
+def namespace_acp = "dev-stage-pipeline"
+def namespace_prd = "dev-prod-pipeline"	
 
 nexus_url="http://nexus-cicd-demo.apps.cluster-workshop-07d8.workshop-07d8.example.opentlc.com/repository/"
 nexus_repository="maven-releases"
+
+svc_name="business-application-service"
 
 
 pipeline {
@@ -110,27 +108,17 @@ pipeline {
         }
 
         stage("Deploy in Stage Namespace") {
-           // agent any
             steps {
                 script {
-
-                            }
-                            
-                        //}
-                    //}
+                   sh "ocp-resources/oc rollout latest dc ${svc_name} -n ${namespace_acp}"
                 }
             }
         }
 
         stage("Deploy in Prod Namespace") {
-           // agent any
             steps {
                 script {
-
-                            }
-                            
-                        //}
-                    //}
+                   sh "ocp-resources/oc rollout latest dc ${svc_name} -n ${namespace_prd}"     
                 }
             }
         }

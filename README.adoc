@@ -92,12 +92,12 @@ first start at xref:anchor-1[How To Use this Repo]
 first start at xref:anchor-4[How To Use in Openshift]
 
 1. Use the *openshift* profile to *Build App*, *Build KJAR Maven Dependencies Repo*, *Build Image with Repo*, *Create resoures bc/dc*
-** Build and deploy in OCP
+* Build and deploy in OCP
 
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 
-** Check the created OCP resources
+* Check the created OCP resources
 
 	oc get all -l app=business-application-service
 	oc get all -l version=2.2.14
@@ -125,8 +125,41 @@ first start at xref:anchor-4[How To Use in Openshift]
         oc secrets link builder imagestreamsecret --for=pull -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED} 
         oc secrets link builder imagestreamsecret -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
+* if the pipeline will `rollout` the service to other namespaces (eg `stage-pam-pipeline`, `prod-pam-pipeline`), 
+** then in the `namespace` where the Jenkins pipeline will build/deliver the generated *Service Image* and register it within the *ImageStream* (eg `dev-pam-pipeline`) that namespace will need to contain `system:image-puller` for *ServiceAccount* of the namespaces the image will be rolled out to:
+
+	oc policy add-role-to-user system:image-puller system:serviceaccount:${STAGE/PROD_NAMESPACE}:default -n -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
+
+	eg.
+	oc policy add-role-to-user system:image-puller system:serviceaccount:stage-pam-pipeline:default -n dev-pam-pipeline
+	clusterrole.rbac.authorization.k8s.io/system:image-puller added: "system:serviceaccount:stage-pam-pipeline:default
+
+** Deployment Configs need to be created with the following command (modifying for each namespace *NAMESPACE_TO_DEPLOY_TO* and *NAMESPACE_TO_BUILD_AT*
+
+      oc create -f ocp-resources/business-application-service-deployment.yml -n stage-pam-pipeline
+      oc create -f ocp-resources/business-application-service-deployment.yml -n prod-pam-pipeline
+
+** Create databases as needed in these namespaces
+
+	oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm -n stage-pam-pipeline
+	oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm -n prod-pam-pipeline
+
 2. Add a *new* Jenkins job based on the https://github.com/skoussou/springboot-business-app/blob/master/Jenkinsfile[`Jenkinsfile`] in this repository in your Jenkins and configure the parameters at the top of the file to the correct namespaces
-4. Updates to `pom.xml` require updates of version in https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`] version 
+* *git_bussiness_app_project_repo =*  The URL to the cloned business app project
+* *git_bussiness_app_project_branch =* The branch to clone from in the jenkins pipeline
+* *namespace_dev =* namespace where the build will occur
+* *def namespace_acp =* rollout to this namespace after dev
+* *def namespace_prd =* rollout to this namespace after staged
+
+nexus_url="http://nexus-cicd-demo.apps.cluster-workshop-07d8.workshop-07d8.example.opentlc.com/repository/"
+nexus_repository="maven-releases"
+3. Updates to `pom.xml` *version* requires updates of version in https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`] version 
+4. *Run New Jenkins Build*
+* Check the created OCP resources
+
+	oc get all -l app=business-application-service
+	oc get all -l version=2.2.15
+
 3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
