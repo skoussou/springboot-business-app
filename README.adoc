@@ -198,9 +198,9 @@ first start at xref:anchor-4[How To Use in Openshift]
 3. Timers
 4. APIs
 
-[[anchor-8]]
-== How To Deploy a KJAR into Central Maven Repo
 
+== How To Deploy a KJAR into Central Maven Repo
+[[anchor-8]]
 * See example at: https://github.com/skoussou/basic-kjar/blob/b4a11571cc099203ecfd0cf08b11f6957c56842d/pom.xml#L9[Basic KJAR distributionManagement]
 * With https://github.com/skoussou/basic-kjar/blob/b4a11571cc099203ecfd0cf08b11f6957c56842d/settings.xml#L12[server configs in settings.xml matching the distributionManagement ids] execute:
 
