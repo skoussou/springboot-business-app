@@ -137,7 +137,11 @@ first start at xref:anchor-4[How To Use in Openshift]
 ** Deployment Configs need to be created with the following command (modifying for each namespace *NAMESPACE_TO_DEPLOY_TO* and *NAMESPACE_TO_BUILD_AT*
 
       oc create -f ocp-resources/business-application-service-deployment.yml -n stage-pam-pipeline
+      oc create -f src/main/fabric8/service.yml -n stage-pam-pipeline
+      oc expose business-application-service -n stage-pam-pipeline
       oc create -f ocp-resources/business-application-service-deployment.yml -n prod-pam-pipeline
+      oc create -f src/main/fabric8/service.yml -n prod-pam-pipeline
+      oc expose business-application-service -n prod-pam-pipeline
 
 ** Create databases as needed in these namespaces
 
