@@ -37,7 +37,10 @@ IMPORTANT: Important: Before using note that by default this App provides the mi
 first start at xref:anchor-1[How To Use this Repo]
 
 1. _Run_ *JenkinspipelineBatch.sh* script to create KJARs binaries, a repository of their dependencies (along with the KJARs installed in it), configurations for the Springboot Runtime App (`your-service-name.xml` kie-server-state, `application-XXX.properties`) based on what is to run
-* *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`
+* *[Parameter 1]* a list of KJARs to be loaded into Springboot App. The list must have the following format `containerAlias-1#RuntimeStrategy#GIT_REPO-1,containerAlias-2#RuntimeStrategy#GIT_REPO-2,containerAlias-N#RuntimeStrategy#GIT_REPO-N`, eg:
+
+	 ./JenkinspipelineBatch.sh basic#PER_PROCESS_INSTANCE#https://github.com/skoussou/basic-kjar,retail#PER_CASE#https://github.com/skoussou/example-retail-credit-kjar business-application-service
+
 * *[Parameter 2]* Name of Business Service (will be used for `kie-server-state` config file name, `application-xxx.properties` configurations `kieserver.serverId`, `kieserver.Name`)
 2. Run the Service as local SpringBoot App and xref:anchor-6[Use the KJAR Springboot Service APIs]
 * No external DB dependencies
