@@ -97,7 +97,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 
-** Check the create OCP resources
+** Check the created OCP resources
 
 	oc get all -l app=business-application-service
 	oc get all -l version=2.2.14
@@ -114,7 +114,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 1. OCP Secrets/ServiceAccount Setups if working on your own Cluster
 * Bind *_edit_* role to *cicd-pam* group or to group which is used in the CICD Jenkins namespace to be able to *_edit_* the namespace where buildsConfigs, deploymentConfigs, builds etc. will be configured in
 
-	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam
+	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
 * have a secret containing the *redhat.registry.io* credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
 
