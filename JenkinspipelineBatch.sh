@@ -9,7 +9,6 @@ fi
 
 KJAR_GAV_LIST=$1
 SB_APP_SERVICE=$2
-#SB_APP_REPO=$4
 CONTAINERS_XML=""
 KJAR_REPO=""
 
@@ -28,7 +27,18 @@ mkdir ../kjar
 
 KJAR_GAV_LIST=($KJAR_GAV_LIST)
 
+# The Springboot Business Service App Directory Name
+APP_DIR=$(basename "$PWD")
 
+# The path of the parent directory of the Springboot BUsiness Service App directory
+PARENT_DIR_PATH=$(dirname "$PWD")
+
+
+
+echo 
+echo "Application Directory: $APP_DIR"
+echo "Path                 : ${PARENT_DIR_PATH}/${APP_DIR}"
+echo
 
 array=(${KJAR_GAV_LIST//","/" "})
 
@@ -55,23 +65,25 @@ for ((i = 0; i < ${#array[@]}; ++i)); do
     echo '#---------------------------------------------------------------------------------------------------------------------------------'
     echo "  Clone the repo for [$KJAR_NAME] for which the Business Service will be created [$KJAR_REPO]"
     echo '#---------------------------------------------------------------------------------------------------------------------------------'
-    echo "git -C /home/stkousso/Stelios/sw11/git/PAM/start-business-apps/kjar clone $KJAR_REPO"
-    git -C /home/stkousso/Stelios/sw11/git/PAM/start-business-apps/kjar clone $KJAR_REPO
+    echo "git -C ${PARENT_DIR_PATH}/kjar clone $KJAR_REPO"
+    git -C ${PARENT_DIR_PATH}/kjar clone $KJAR_REPO
     echo 
     REPO_DIR="${KJAR_REPO##*/}"
     echo '#---------------------------------------------------------------------------------------------------------------------------------'
     echo "  Create local Repo dependencies for KJAR ["$KJAR_NAME"] repo [$KJAR_REPO]"
     echo '#---------------------------------------------------------------------------------------------------------------------------------'
-    echo "mvn -e -DskipTests dependency:go-offline -f ../kjar/$REPO_DIR/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../springboot-business-app/settings.xml"
-    mvn -e -q -DskipTests dependency:go-offline -f ../kjar/$REPO_DIR/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../springboot-business-app/settings.xml
+    #echo "mvn -e -DskipTests dependency:go-offline -f ../kjar/$REPO_DIR/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../springboot-business-app/settings.xml"
+    #mvn -e -q -DskipTests dependency:go-offline -f ../kjar/$REPO_DIR/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../springboot-business-app/settings.xml
+    echo "mvn -e -DskipTests dependency:go-offline -f ../kjar/$REPO_DIR/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../${APP_DIR}/settings.xml"
+    mvn -e -q -DskipTests dependency:go-offline -f ../kjar/$REPO_DIR/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../${APP_DIR}/settings.xml
     echo 
     echo '#---------------------------------------------------------------------------------------------------------------------------------'
     echo "  Build and Deploy to local repository the KJAR ["$KJAR_REPO"]"
     echo '#---------------------------------------------------------------------------------------------------------------------------------'
     #echo "mvn clean deploy -f ../kjar/$REPO_DIR/pom.xml -s ../springboot-business-app/settings.xml -DaltReleaseDeploymentRepository=local-nexus::default::file://.local-m2-repository"
     #mvn clean deploy -q -f ../kjar/$REPO_DIR/pom.xml -s ../springboot-business-app/settings.xml -DaltReleaseDeploymentRepository=local-nexus::default::file://.local-m2-repository
-    echo "mvn clean install -q -f ../kjar/$REPO_DIR/pom.xml -s ../springboot-business-app/settings.xml"
-    mvn clean install -q -f ../kjar/$REPO_DIR/pom.xml -s ../springboot-business-app/settings.xml
+    echo "mvn clean install -q -f ../kjar/$REPO_DIR/pom.xml -s ../${APP_DIR}/settings.xml"
+    mvn clean install -q -f ../kjar/$REPO_DIR/pom.xml -s ../${APP_DIR}/settings.xml
     echo
     xslt_cmd="xsltproc extract-gav.xsl ../kjar/$REPO_DIR/pom.xml"
 #    RELEASE_ID=${xsltproc extract-gav.xsl ../kjar/$REPO_DIR/pom.xml}
@@ -140,7 +152,6 @@ KEYS=(kieserver.serverId kieserver.serverName)
 
 properties_dir='./src/main/resources'
 for ((i = 0; i < ${#KEYS[@]}; ++i)); do
-    #filename='./src/main/resources/application.properties'
     filename=""
     #properties_dir='./src/main/resources'
 
@@ -170,7 +181,8 @@ for ((i = 0; i < ${#KEYS[@]}; ++i)); do
 
 done
 
-rm -r $properties_dir"/.propertiesr"
+#rm -r $properties_dir"/*.propertiesr"
+rm -r ${PARENT_DIR_PATH}/${APP_DIR}"/src/main/resources/*.propertiesr"
 
 echo
 echo "Update/Create $SB_APP_SERVICE.xml with [$KJAR_GAV_LIST] to load the KJAR(s)"
@@ -233,29 +245,5 @@ echo '#-------------------------------------------------------------------------
 echo "$XML_CONFIG" > "$SB_APP_SERVICE.xml"
 echo 
 echo 
-
-#echo '##################################################################################################################################'
-#echo "  Clone the KJAR repo for which the Business Service will be created ["$KJAR_REPO"]"
-#echo '##################################################################################################################################'
-#echo 'git -C /home/stkousso/Stelios/sw11/git/PAM/start-business-apps/kjar clone https://github.com/skoussou/JBossAutomationPlayground'
-#git -C /home/stkousso/Stelios/sw11/git/PAM/start-business-apps/kjar clone https://github.com/skoussou/JBossAutomationPlayground
-
-
-#ls -l ../kjar/JBossAutomationPlayground/example-kjars/basic-kjar
-
-#echo '##################################################################################################################################'
-#echo "  Create local Repo dependencies for KJAR ["$KJAR_REPO"]"
-#echo '##################################################################################################################################'
-#echo 'mvn -e -DskipTests dependency:go-offline -f ../kjar/JBossAutomationPlayground/example-kjars/basic-kjar/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../springboot-business-app/settings.xml'
-#mvn -e -DskipTests dependency:go-offline -f ../kjar/JBossAutomationPlayground/example-kjars/basic-kjar/pom.xml --batch-mode -Djava.net.preferIPv4Stack=true -s ../springboot-business-app/settings.xml
-
-
-#echo '##################################################################################################################################'
-#echo "  Build and Deploy to local repository the KJAR ["$KJAR_REPO"]"
-#echo '##################################################################################################################################'
-#echo 'mvn clean deploy -f ../kjar/JBossAutomationPlayground/example-kjars/basic-kjar/pom.xml -s ../springboot-business-app/settings.xml -DaltReleaseDeploymentRepository=local-nexus::default::file://.local-m2-repository'
-#mvn clean deploy -f ../kjar/JBossAutomationPlayground/example-kjars/basic-kjar/pom.xml -s ../springboot-business-app/settings.xml -DaltReleaseDeploymentRepository=local-nexus::default::file://.local-m2-repository
-
-
 
 

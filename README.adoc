@@ -62,7 +62,7 @@ first start at xref:anchor-1[How To Use this Repo]
 
 first start at xref:anchor-1[How To Use this Repo]
 
-1. Configure in `pom.xml` the KJARs you plan to deploy in your service (KJARs need to be deployed in NEXUS if using a central maven repo)
+1. Configure in `pom.xml` the KJARs you plan to deploy in your service (*Important:* KJARs need to be deployed in NEXUS if using a central maven repo. See xref:anchor-8[How To Deploy a KJAR into Central Maven Repo])
 
         <artifacts>
             <gav>com.redhat:basic-kjar:1.0.0</gav>
@@ -169,11 +169,12 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 * Find Process IDs in KIEContainer
 
+	curl -k -u user:user -X GET "http://127.0.0.1:8090/rest/server/containers/retail/processes/" -H "accept: application/json"
 	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/{ALIAS or CONTAINERID}/processes/" -H "accept: application/json"
-
 
 * Find Process Details(eg. process Variables) based on Process ID
 
+	curl -k -u user:user -X GET "http://127.0.0.1:8090/rest/server/containers/retail/processes/definitions/my-process" -H "accept: application/json"
 	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/containers/{ALIAS or CONTAINERID}/processes/definitions/{ProcessID}" -H "accept: application/json"
 
 * Start Process
@@ -184,6 +185,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 * Retrieve instances of processes in KIEContainer (status 1=Active, 2=Completed, 3=Error)
 
+	curl -u 'user:user' -X GET  "http://127.0.0.1:8090/rest/server/containers/example-retail-credit-kjar-1.0.0/processes/instances?status=2&page=0&pageSize=10&sortOrder=true" -H "accept: application/json" -H "content-type: application/json"
 	curl -k -u user:user -X GET "http://business-application-service-dev-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/rest/server/containers/{CONTAINER_ID}/processes/instances?status=2&page=0&pageSize=10&sortOrder=true" -H "accept: application/json" -H "content-type: application/json"
 
 
@@ -196,6 +198,13 @@ first start at xref:anchor-4[How To Use in Openshift]
 3. Timers
 4. APIs
 
+[[anchor-8]]
+== How To Deploy a KJAR into Central Maven Repo
+
+* See example at: https://github.com/skoussou/basic-kjar/blob/b4a11571cc099203ecfd0cf08b11f6957c56842d/pom.xml#L9[Basic KJAR distributionManagement]
+* With https://github.com/skoussou/basic-kjar/blob/b4a11571cc099203ecfd0cf08b11f6957c56842d/settings.xml#L12[server configs in settings.xml matching the distributionManagement ids] execute:
+
+	mvn clean deploy -s settings.xml
 
 Resources: Docs on Openshift DSL Pipeline creation
 
