@@ -62,7 +62,7 @@ first start at xref:anchor-1[How To Use this Repo]
 
 first start at xref:anchor-1[How To Use this Repo]
 
-1. Configure in `pom.xml` the KJARs you plan to deploy in your service (*Important:* KJARs need to be deployed in NEXUS if using a central maven repo. See xref:anchor-8[How To Deploy a KJAR into Central Maven Repo])
+1. Configure in `pom.xml` under https://github.com/skoussou/springboot-business-app/blob/master/pom.xml#L87[artifacts section] the KJARs you plan to deploy in your service (*Important:* KJARs need to be deployed in NEXUS if using a central maven repo. See xref:anchor-8[How To Deploy a KJAR into Central Maven Repo])
 
         <artifacts>
             <gav>com.redhat:basic-kjar:1.0.0</gav>
