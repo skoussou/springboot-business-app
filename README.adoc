@@ -157,7 +157,23 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 	git clone https://github.com/ippul/offliner-maven-plugin.git
 	cd offliner-maven-plugin
-	mvn clean deploy -DaltReleaseDeploymentRepository=maven-snapshots::default::http://nexus-cicd-pam.apps.cluster-workshop-d20a.workshop-d20a.example.opentlc.com/repository/maven-snapshots
+	add to pom.xml
+        ---------------------------	
+	<distributionManagement>
+	  <repository>
+	    <id>releases</id>
+	      <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-releases/</url>
+	  </repository>
+	  <snapshotRepository>
+	    <id>snapshots</id>
+	    <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-snapshots/</url>
+	  </snapshotRepository>
+	</distributionManagement>
+        ---------------------------	
+
+With https://github.com/skoussou/basic-kjar/blob/b4a11571cc099203ecfd0cf08b11f6957c56842d/settings.xml#L12[server configs in settings.xml matching the distributionManagement ids] 
+
+	mvn clean deploy -s 
 
 
 [[anchor-6]]
