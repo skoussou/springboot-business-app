@@ -147,12 +147,12 @@ first start at xref:anchor-4[How To Use in Openshift]
 2. Add a *new* Jenkins job based on the https://github.com/skoussou/springboot-business-app/blob/master/Jenkinsfile[`Jenkinsfile`] in this repository in your Jenkins and configure the parameters at the top of the file to the correct namespaces
 * *git_bussiness_app_project_repo =*  The URL to the cloned business app project
 * *git_bussiness_app_project_branch =* The branch to clone from in the jenkins pipeline
-* *namespace_dev =* namespace where the build will occur
-* *def namespace_acp =* rollout to this namespace after dev
-* *def namespace_prd =* rollout to this namespace after staged
-
-nexus_url="http://nexus-cicd-demo.apps.cluster-workshop-07d8.workshop-07d8.example.opentlc.com/repository/"
-nexus_repository="maven-releases"
+* *namespace_dev=* namespace where the build will occur
+* *def namespace_acp=* rollout to this namespace after dev
+* *def namespace_prd=* rollout to this namespace after stage
+* *nexus_url=* NEXUS Repositories URL
+* *nexus_repository=* repository where relesaes are deployed in nexus
+* *svc_name=* name pf the service
 3. Updates to `pom.xml` *version* requires updates of version in https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`] version 
 4. *Run New Jenkins Build*
 * Check the created OCP resources
