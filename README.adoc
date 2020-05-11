@@ -73,7 +73,7 @@ first start at xref:anchor-1[How To Use this Repo]
 2. Configure `your-service-name.xml` (see `business-application-service.xml` as an example and must match `application-openshift.properties` properties `kieserver.serverId`, `kieserver.Name`) 
 * one *<container>* for each KJAR above
 
-3. Configure the `artifactId` in the `Dockerfile` along with the version
+3. Configure the `artifactId` and version based on your pom.xml in the https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`]
 
 4. Configure database connection details in `application-openshift.properties` to connect to either an _external database_ or create a MySQL database service in openshift 
 
