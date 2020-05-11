@@ -97,31 +97,12 @@ first start at xref:anchor-4[How To Use in Openshift]
 	mvn clean package -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 	mvn fabric8:deploy -Dfabric8.namespace=dev-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50 -s settings-nexus.xml
 
-	
-	WARNING: JAVA_OPTIONS are not copied into deploymentConfig so you have to find in the DeploymentConfig
-			  env:
-			    - name: GC_MAX_METASPACE_SIZE
-			      value: '512'
+** Check the create OCP resources
 
-	and append
-			  env:
-			    - name: GC_MAX_METASPACE_SIZE
-			      value: '512'
-			  env:
-			    - name: JAVA_OPTIONS
-			      value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
+	oc get all -l app=business-application-service
+	oc get all -l version=2.2.14
 
-
-	(01/05/2020) also latest weird issue is I had to add in created DC the image registry where the generated ImageStream "business-application-service" points for the image as otherwise POD failed to pull looking at docker.io for it
-	mvn fabric8:deploy -Dfabric8.namespace=test-pam -DskipTests=true -P openshift -Dmaven.artifact.threads=50  -s settings-nexus.xml
-
-	It is due to deployment.yml which doesn't have the image part (test again now that I have put it as deployment.txt)
-
-2.  expose service route
-
-	oc expose svc business-application-service 
-
-3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
+2.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
 	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
 

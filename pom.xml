@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat</groupId>
   <artifactId>business-application-service</artifactId>
-  <version>2.2.14</version>
+  <version>2.2.15</version>
   <packaging>jar</packaging>
   <name>business-application-service</name>
 
@@ -311,7 +311,7 @@
                       <SPRING_PROFILES_ACTIVE>openshift</SPRING_PROFILES_ACTIVE>
                      </env>
                      <env>
-                       <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=true</JAVA_OPTIONS>
+                       <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-profile</JAVA_OPTIONS>
                     </env>
                     <ports>
                       <port>8090</port>
@@ -433,7 +433,7 @@
                 <annotations>
                 </annotations>
                 <env>
-                   <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-docker</JAVA_OPTIONS>
+                   <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-dockerfile-profile</JAVA_OPTIONS>
                 </env>
                 <env>
                    <GC_MAX_METASPACE_SIZE>512</GC_MAX_METASPACE_SIZE>
