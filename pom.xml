@@ -6,6 +6,7 @@
   <version>2.2.16</version>
   <packaging>jar</packaging>
   <name>business-application-service</name>
+  <description>Springboot RHPAM Project baseline for quick automation on starting up (Local, fabric8 to OCP, Jenkins to OCP)</description>	  
 
   <parent>
     <groupId>org.springframework.boot</groupId>
