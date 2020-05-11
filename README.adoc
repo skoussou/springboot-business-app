@@ -116,16 +116,16 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
-* have a secret containing the *redhat.registry.io* credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
+* have a secret containing the `redhat.registry.io` credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
 
-	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson
+	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
-* associate the _imagestreamsecret_, within the namespace which will receive the _Jenkinspipeline_ builds and will be required to pull images/create new images, with the relevant *_serviceaccount_*
+* associate the `imagestreamsecret`, within the namespace which will receive the `Jenkinsfile` pipelne builds and will be required to pull images/create new images, with the relevant *_ServiceAccount_*
 
-        oc secrets link builder imagestreamsecret --for=pull
-        oc secrets link builder imagestreamsecret
+        oc secrets link builder imagestreamsecret --for=pull -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED} 
+        oc secrets link builder imagestreamsecret -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
-2. Add a Jenkins job baed on the *Jenkinsfile* in this repository in your Jenkins and configure the parameters at the top of the file to the correct namespaces
+2. Add a Jenkins job baed on the `Jenkinsfile` in this repository in your Jenkins and configure the parameters at the top of the file to the correct namespaces
 4. Updates to `pom.xml` require updates of version in `Dockerfile` version 
 3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
