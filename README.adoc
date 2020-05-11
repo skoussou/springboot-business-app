@@ -109,7 +109,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 			      value: '512'
 			  env:
 			    - name: JAVA_OPTIONS
-			      value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
+			      value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository"
 
 
 	(01/05/2020) also latest weird issue is I had to add in created DC the image registry where the generated ImageStream "business-application-service" points for the image as otherwise POD failed to pull looking at docker.io for it

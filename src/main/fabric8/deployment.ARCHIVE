@@ -5,9 +5,9 @@ spec:
       - env:
 # Can remove this as its a simple environment var and added via fabric8
         - name: SPRING_PROFILES_ACTIVE
-          value: "openshifth2"
+          value: "openshift"
         - name: JAVA_OPTIONS
-          value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshifth2 -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=deployment.yml"          
+          value: "-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=deployment.yml"          
 # The bellow we keep since we need to use resource fragments for this
 #        - name: SPRING_DATASOURCE_USER
 #          valueFrom:
