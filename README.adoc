@@ -13,15 +13,15 @@ image::images/aim.jpg[800,800]
 1. *MUST:* be possible to load/expose a KJAR (KieContainer) by simply giving a GIT repository
 2. *MUST:* Absolute minimum dependencies must be https://maven.repository.redhat.com/ga[Red Hat public maven artifacts] and availability of http://maven.apache.org/download.cgi?Preferred=ftp://mirror.reverse.net/pub/apache/[maven binary] 
 3. *MUST:* I want to not be hindered by environmental dependencies what are these? (DB, NEXUS, ALL NEXUS Dependencies require in the image, Security for roles) in trying this out
-4. *Nice to Have:* I would like to have the option to externalize DB (with minimum -maven/springboot profile-)
+4. *Nice to Have:* I would like to have the option to externalize DB (with minimum -maven/springboot profile- effort)
 5. *Nice to Have:* I would like to have Monitoring via RHPAM Monitor/Business Central possible)
-
-
-* CICD requirements to satisfy
-** a) To install the KJARs in NEXUS server (normal CICD Lifecycle each KJAR has its own pipeline for release)
-** b) To configure the Springboot Service App with settings.xml pointing to the repos where KJARs can be found
-** c) To configure the Springboot Service App with the correct kie-server-state file (maybe automate)
-** d) To include the repo of dependencies in for KJARs in the image
+6. *Must Have:* CICD pipeline with Jenkins to satisfy
+* a) To install the KJARs in NEXUS server (normal CICD Lifecycle each KJAR has its own pipeline for release)
+* b) To configure the Springboot Service App via  `pom.xml` pointing to KJARs in MAVEN (Nexus/Artifactory) repository
+* c) Configure the Springboot Service App with the correct kie-server-state file (can be automated)
+* d) To include the repo of dependencies in for KJARs in the image
+* e) To release/rollout new versions of the Springboot Service App
+* f) To rollout to other namespaces
 
 
 == How To Use this Repo
