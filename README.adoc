@@ -104,7 +104,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 2.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
-	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
+	[ROUTE_URL]/rest/api-docs?url=../rest/server/swagger.json	(user/user)
 
 
 ==== Run the Service (CICD) in Openshift
@@ -128,22 +128,41 @@ first start at xref:anchor-4[How To Use in Openshift]
 * if the pipeline will `rollout` the service to other namespaces (eg `stage-pam-pipeline`, `prod-pam-pipeline`), 
 ** then in the `namespace` where the Jenkins pipeline will build/deliver the generated *Service Image* and register it within the *ImageStream* (eg `dev-pam-pipeline`) that namespace will need to contain `system:image-puller` for *ServiceAccount* of the namespaces the image will be rolled out to:
 
-	oc policy add-role-to-user system:image-puller system:serviceaccount:${STAGE/PROD_NAMESPACE}:default -n -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
+	oc policy add-role-to-user system:image-puller system:serviceaccount:${STAGE/PROD_NAMESPACE}:default -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
 	eg.
 	oc policy add-role-to-user system:image-puller system:serviceaccount:stage-pam-pipeline:default -n dev-pam-pipeline
 	clusterrole.rbac.authorization.k8s.io/system:image-puller added: "system:serviceaccount:stage-pam-pipeline:default
 
-** Deployment Configs need to be created with the following command (modifying for each namespace *NAMESPACE_TO_DEPLOY_TO* and *NAMESPACE_TO_BUILD_AT*
+** Deployment Configs need to be created with the following command (modifying for each namespace *NAMESPACE_TO_DEPLOY* and *IMAGE_STREAM_NAMESPACE* (ie. namespace where the business app ImageStream was created in)
 
-      oc create -f ocp-resources/business-application-service-deployment.yml -n stage-pam-pipeline
-      oc create -f src/main/fabric8/service.yml -n stage-pam-pipeline
-      oc expose business-application-service -n stage-pam-pipeline
-      oc create -f ocp-resources/business-application-service-deployment.yml -n prod-pam-pipeline
-      oc create -f src/main/fabric8/service.yml -n prod-pam-pipeline
-      oc expose business-application-service -n prod-pam-pipeline
+	oc new-app ocp-resources/business-app-deployment-template.yml   \
+                    -p IMAGE_STREAM_NAMESPACE=${IMAGE_STREAM_NAMESPACE} \
+                    -p IMAGE_STREAM_NAME=business-application-service   \
+                    -p IMAGE_STREAM_TAG=2.2.18                          \
+                    -p  NAMESPACE_TO_DEPLOY=qa-pam-pipeline             \
+                    -l application=business-application-service -n qa-pam-pipeline
 
-** Create databases as needed in these namespaces
+
+*** for `stage-pam-pipeline`
+
+	oc new-app ocp-resources/business-app-deployment-template.yml \
+                    -p IMAGE_STREAM_NAMESPACE=dev-pam-pipeline        \
+                    -p IMAGE_STREAM_NAME=business-application-service \
+                    -p IMAGE_STREAM_TAG=2.2.18                        \
+                    -p  NAMESPACE_TO_DEPLOY=stage-pam-pipeline        \
+                    -l application=business-application-service -n stage-pam-pipeline
+
+*** for `prod-pam-pipeline`
+
+	oc new-app ocp-resources/business-app-deployment-template.yml \
+                    -p IMAGE_STREAM_NAMESPACE=dev-pam-pipeline        \
+                    -p IMAGE_STREAM_NAME=business-application-service \
+                    -p IMAGE_STREAM_TAG=2.2.18                        \
+                    -p  NAMESPACE_TO_DEPLOY=prod-pam-pipeline         \
+                    -l application=business-application-service -n prod-pam-pipeline
+
+** Create databases as needed in all these namespaces (unless using an externally configured database via `application-openshift.properties`
 
 	oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm -n stage-pam-pipeline
 	oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm -n prod-pam-pipeline
@@ -151,12 +170,12 @@ first start at xref:anchor-4[How To Use in Openshift]
 2. Add a *new* Jenkins job based on the https://github.com/skoussou/springboot-business-app/blob/master/Jenkinsfile[`Jenkinsfile`] in this repository in your Jenkins and configure the parameters at the top of the file to the correct namespaces
 * *git_bussiness_app_project_repo =*  The URL to the cloned business app project
 * *git_bussiness_app_project_branch =* The branch to clone from in the jenkins pipeline
+* *svc_name=* name of the service
 * *namespace_dev=* namespace where the build will occur
 * *def namespace_acp=* rollout to this namespace after dev
 * *def namespace_prd=* rollout to this namespace after stage
 * *nexus_url=* NEXUS Repositories URL
 * *nexus_repository=* repository where relesaes are deployed in nexus
-* *svc_name=* name pf the service
 3. Updates to `pom.xml` *version* requires updates of version in https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`] version 
 4. *Run New Jenkins Build*
 * Check the created OCP resources
@@ -166,7 +185,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 3.  Get to Swagger API and xref:anchor-6[Use the KJAR Springboot Service APIs]
 
-	[ROUTE_URL]rest/api-docs?url=../rest/server/swagger.json	(user/user)
+	[ROUTE_URL]/rest/api-docs?url=../rest/server/swagger.json	(user/user)
 
 [[anchor-5]]
 == Plugin for building KJAR Dependencies
@@ -192,7 +211,6 @@ first start at xref:anchor-4[How To Use in Openshift]
 With https://github.com/skoussou/basic-kjar/blob/b4a11571cc099203ecfd0cf08b11f6957c56842d/settings.xml#L12[server configs in settings.xml matching the distributionManagement ids] 
 
 	mvn clean deploy -s 
-
 
 [[anchor-6]]
 == KJAR Springboot Service APIs

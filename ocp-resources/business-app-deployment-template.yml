@@ -1,0 +1,128 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    iconClass: icon-jboss
+    tags: rhpam,springboot
+    openshift.io/display-name: RH PAM Springboot Test/Prod Environment
+    description: Application Template to rollout a Springboot based RHPAM App in Test and Prod environments
+    template.openshift.io/documentation-url: https://github.com/skoussou/springboot-business-app.git
+  name: rhpam-springboot-app-deploy
+labels:
+  template: rhpam-springboot-app-deploy
+message: |-
+  An image of the springboot app has already been built in the Image Stream Namespace
+
+      ImageStream Namespace: ${IMAGE_STREAM_NAMESPACE}
+      ImageStream : ${IMAGE_STREAM}
+      Deployment Namespace: ${NAMESPACE_TO_DEPLOY}
+parameters:
+- displayName: ImageStream Namespace
+  description: Namespace in which the ImageStreams this Springboot Business Application images are installed. 
+  name: IMAGE_STREAM_NAMESPACE
+  value: openshift
+- displayName: ImageStream Name
+  description: Name of the ImageStream this Springboot Business Application images are registered against.
+  name: IMAGE_STREAM_NAME
+  value: business-application-service
+- displayName: ImageStream Tag
+  description: A named pointer to an image in an image stream. Default is "7.6.0".
+  name: IMAGE_STREAM_TAG
+  required: true
+- displayName: Namespace
+  description: The name of the namespace where this will be created in
+  name: NAMESPACE_TO_DEPLOY
+  required: true
+objects:
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: "${IMAGE_STREAM_NAME}"
+    labels:
+      app: "${IMAGE_STREAM_NAME}"
+      version: "${IMAGE_STREAM_TAG}"
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+  spec:
+    strategy:
+      rollingParams:
+        maxSurge: 100%
+        maxUnavailable: 0
+      type: Rolling
+    triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: false
+        containerNames:
+        - "${NAMESPACE_TO_DEPLOY}-business-application-service"
+        from:
+          kind: ImageStreamTag
+          namespace: "${IMAGE_STREAM_NAMESPACE}"
+          name: "${IMAGE_STREAM_NAME}:${IMAGE_STREAM_TAG}"
+    - type: ConfigChange
+    replicas: 1
+    selector:
+      deploymentConfig: "${IMAGE_STREAM_NAME}"
+    template:
+      metadata:
+        name: "${NAMESPACE_TO_DEPLOY}-business-application-service"
+        labels:
+          deploymentConfig: "${IMAGE_STREAM_NAME}"
+          app: "${IMAGE_STREAM_NAME}"
+          version: "${IMAGE_STREAM_TAG}"
+      spec:
+        terminationGracePeriodSeconds: 60
+        containers:
+        - name: "${NAMESPACE_TO_DEPLOY}-business-application-service"
+          image: image-registry.openshift-image-registry.svc:5000/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_NAME}
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: http
+            containerPort: 8090
+            protocol: TCP
+          env:
+          - name: GC_MAX_METASPACE_SIZE
+            value: "512"
+          - name: KUBERNETES_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${IMAGE_STREAM_NAME}"
+    labels:
+      app: "${IMAGE_STREAM_NAME}"
+  spec:
+    ports:
+    - name: http
+      protocol: TCP
+      port: 8090
+      targetPort: 8090
+    selector:
+      deploymentConfig: "${IMAGE_STREAM_NAME}"
+    type: ClusterIP
+- kind: Route
+  apiVersion: v1
+  id: "${NAMESPACE_TO_DEPLOY}-business-application-service"
+  metadata:
+    name: "${NAMESPACE_TO_DEPLOY}-business-application-service"
+    labels:
+      name: "${IMAGE_STREAM_NAME}"
+  spec:
+    to:
+      kind: Service
+      name: "${IMAGE_STREAM_NAME}"
+    port:
+      targetPort: 8090
+
+
+
+
+
+
+
+
+
