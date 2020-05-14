@@ -38,7 +38,7 @@
     <mirror>
       <mirrorOf>*</mirrorOf>
       <name>nexus</name>
-      <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-all-public/</url>
+      <url>http://nexus-cicd-demo.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-all-public/</url>
       <id>nexus</id>
     </mirror>
   </mirrors>
@@ -54,7 +54,7 @@
       <repositories>
         <repository>
           <id>nexus-releases-repository</id>
-          <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-releases/</url>
+          <url>http://nexus-cicd-demo.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-releases/</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -64,7 +64,7 @@
         </repository>
         <repository>
           <id>nexus-snapshots-repository</id>
-          <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-snapshots/</url>
+          <url>http://nexus-cicd-demo.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -76,7 +76,7 @@
       <pluginRepositories>
         <pluginRepository>
           <id>nexus-releases-plugin-repository</id>
-          <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-releases/</url>
+          <url>http://nexus-cicd-demo.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-releases/</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -86,7 +86,7 @@
         </pluginRepository>
         <pluginRepository>
           <id>nexus-snapshots-plugin-repository</id>
-          <url>http://nexus-cicd-pam.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-snapshots/</url>
+          <url>http://nexus-cicd-demo.apps.cluster-rhpam-109e.rhpam-109e.example.opentlc.com/repository/maven-snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
