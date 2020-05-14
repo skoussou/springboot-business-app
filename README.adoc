@@ -116,7 +116,7 @@ first start at xref:anchor-4[How To Use in Openshift]
 
 	oc policy add-role-to-group edit system:serviceaccounts:cicd-pam -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
-* have a secret containing the `redhat.registry.io` credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server)
+* create a secret containing the `redhat.registry.io` credentials for pulling images (this can be done by OCP Infra so this task is if you manage your own server) in all namespaces to be used
 
 	oc create secret generic imagestreamsecret --from-file=.dockerconfigjson=/home/stkousso/.docker/config.json --type=kubernetes.io/dockerconfigjson -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
@@ -126,7 +126,7 @@ first start at xref:anchor-4[How To Use in Openshift]
         oc secrets link builder imagestreamsecret -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 
 * if the pipeline will `rollout` the service to other namespaces (eg `stage-pam-pipeline`, `prod-pam-pipeline`), 
-** then in the `namespace` where the Jenkins pipeline will build/deliver the generated *Service Image* and register it within the *ImageStream* (eg `dev-pam-pipeline`) that namespace will need to contain `system:image-puller` for *ServiceAccount* of the namespaces the image will be rolled out to:
+** then in the `namespace` where the Jenkins pipeline will build/deliver the generated *Service Image* and register it within the *ImageStream* (eg `dev-pam-pipeline`) add `system:image-puller` for *ServiceAccount* of the all namespaces the image will be rolled (ie. pulled by) out to:
 
 	oc policy add-role-to-user system:image-puller system:serviceaccount:${STAGE/PROD_NAMESPACE}:default -n ${NAMESPACE_WHERE_SERVICE_WILL_BE_DEPLOYED}
 

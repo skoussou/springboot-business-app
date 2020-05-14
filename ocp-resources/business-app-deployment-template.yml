@@ -51,6 +51,7 @@ objects:
         maxUnavailable: 0
       type: Rolling
     triggers:
+    - type: ConfigChange            
     - type: ImageChange
       imageChangeParams:
         automatic: false
@@ -60,7 +61,6 @@ objects:
           kind: ImageStreamTag
           namespace: "${IMAGE_STREAM_NAMESPACE}"
           name: "${IMAGE_STREAM_NAME}:${IMAGE_STREAM_TAG}"
-    - type: ConfigChange
     replicas: 1
     selector:
       deploymentConfig: "${IMAGE_STREAM_NAME}"
@@ -106,11 +106,11 @@ objects:
     type: ClusterIP
 - kind: Route
   apiVersion: v1
-  id: "${NAMESPACE_TO_DEPLOY}-business-application-service"
+  id: "business-application-service"
   metadata:
-    name: "${NAMESPACE_TO_DEPLOY}-business-application-service"
+    name: "business-application-service"
     labels:
-      name: "${IMAGE_STREAM_NAME}"
+      app: "${IMAGE_STREAM_NAME}"
   spec:
     to:
       kind: Service
