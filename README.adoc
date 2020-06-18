@@ -86,7 +86,7 @@ first start at xref:anchor-1[How To Use this Repo]
 
 	$ oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm
 
-5. Change the service name according to the `artifact-id` in your `pom.xml` in https://github.com/skoussou/springboot-business-app/blob/master/src/main/fabric8/service.yml[`service.yml`] 
+5. Change the service name according to the `artifact-id` in your `pom.xml` for https://github.com/skoussou/springboot-business-app/blob/master/src/main/fabric8/service.yml[`service.yml`] and  https://github.com/skoussou/springboot-business-app/blob/master/src/main/fabric8/route.yml[`route.yml`] 
 
 ==== Run the service in K8s/Openshift cluster (fabric8) - NON-CICD
 
