@@ -71,9 +71,9 @@ first start at xref:anchor-1[How To Use this Repo]
         </artifacts>
 
 2. Configure `your-service-name.xml` (see `business-application-service.xml` as an example and must match `application-openshift.properties` properties `kieserver.serverId`, `kieserver.Name`) 
-* one *<container>* for each KJAR above
+* one *<container>* sectio for each KJAR above
 
-3. Configure the `artifactId` and version based on your pom.xml in the https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`]
+3. Configure the `artifactId` and `version` based on your `pom.xml` in the https://github.com/skoussou/springboot-business-app/blob/master/Dockerfile#L6[`Dockerfile`]
 
 4. Configure database connection details in `application-openshift.properties` to connect to either an _external database_ or create a MySQL database service in openshift 
 
@@ -86,6 +86,7 @@ first start at xref:anchor-1[How To Use this Repo]
 
 	$ oc new-app --template=mysql-ephemeral -p DATABASE_SERVICE_NAME=pam-mysql -p MYSQL_USER=jbpm -p MYSQL_PASSWORD=jbpm -p MYSQL_ROOT_PASSWORD=root -p MYSQL_DATABASE=jbpm
 
+5. Change the service name according to the `artifact-id` in your `pom.xml` for https://github.com/skoussou/springboot-business-app/blob/master/src/main/fabric8/service.yml[`service.yml`] and  https://github.com/skoussou/springboot-business-app/blob/master/src/main/fabric8/route.yml[`route.yml`] 
 
 ==== Run the service in K8s/Openshift cluster (fabric8) - NON-CICD
 
