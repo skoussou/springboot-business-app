@@ -74,14 +74,14 @@
         </config-item>
       </configItems>
       <messages/>
-      <containerAlias>retail</containerAlias>
+      <containerAlias>retail-example</containerAlias>
     </container>
     <container>
-      <containerId>basic-kjar-3.0.0</containerId>
+      <containerId>basic-kjar-2.0.0</containerId>
       <releaseId>
         <groupId>com.redhat</groupId>
         <artifactId>basic-kjar</artifactId>
-        <version>3.0.0</version>
+        <version>2.0.0</version>
       </releaseId>
       <status>STARTED</status>
       <scanner>
@@ -113,13 +113,13 @@
       <containerAlias>basic</containerAlias>
     </container>
     <container>
-      <containerId>basic-kjar-1.0.0</containerId>
+      <containerId>simple-process-kjar-1.0.7</containerId>
       <releaseId>
         <groupId>com.redhat</groupId>
-        <artifactId>basic-kjar</artifactId>
-        <version>1.0.0</version>
+        <artifactId>simple-process-kjar</artifactId>
+        <version>1.0.7</version>
       </releaseId>
-      <status>FAILED</status>
+      <status>STARTED</status>
       <scanner>
         <status>STOPPED</status>
       </scanner>
@@ -146,7 +146,7 @@
         </config-item>
       </configItems>
       <messages/>
-      <containerAlias>basic</containerAlias>
+      <containerAlias>simple-process-kjar</containerAlias>
     </container>
   </containers>
 </kie-server-state>
