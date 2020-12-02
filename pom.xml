@@ -10,7 +10,8 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.6.RELEASE</version>
+	    <version>2.2.6.RELEASE</version>
+       <!--version>2.3.4.RELEASE</version-->
   </parent>
 
   <properties>
@@ -80,18 +81,18 @@
           <artifactItems>
             <artifactItem>
               <groupId>com.redhat</groupId>
-              <artifactId>basic-kjar</artifactId>
-              <version>1.0.0</version>
+              <artifactId>retail-credit</artifactId>
+              <version>1.18.0</version>
             </artifactItem>
             <artifactItem>
               <groupId>com.redhat</groupId>
               <artifactId>basic-kjar</artifactId>
-              <version>3.0.0</version>
+              <version>2.0.0</version>
             </artifactItem>
             <artifactItem>
               <groupId>com.redhat</groupId>
-              <artifactId>example-retail-credit-kjar</artifactId>
-              <version>1.0.0</version>
+              <artifactId>simple-process-kjar</artifactId>
+              <version>1.0.7</version>
             </artifactItem>
           </artifactItems>
         </configuration>
