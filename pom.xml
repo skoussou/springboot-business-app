@@ -1,67 +1,60 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat</groupId>
   <artifactId>business-application-service</artifactId>
-  <version>2.2.20</version>
+  <version>3.0.0</version>
   <packaging>jar</packaging>
   <name>business-application-service</name>
-  <description>Springboot RHPAM Project baseline for quick automation on starting up (Local, fabric8 to OCP, Jenkins to OCP)</description>	  
+  <description>Springboot RHPAM Project baseline for quick automation on starting up (Local, jkube to OCP, Jenkins to OCP)</description>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.2.RELEASE</version>
+    <version>2.2.6.RELEASE</version>
   </parent>
 
   <properties>
-    <version.org.kie>7.33.0.Final-redhat-00002</version.org.kie>
+    <version.org.kie>7.44.0.Final-redhat-00003</version.org.kie>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <narayana.version>5.9.0.Final</narayana.version>
-    <!--fabric8.version>3.5.40</fabric8.version-->
-<fabric8.version>4.4.1</fabric8.version>
+    <jkube.version>1.0.2</jkube.version>
   </properties>
 
   <dependencies>
-    
-<dependency>
-    <groupId>org.kie</groupId>
-    <artifactId>kie-server-spring-boot-starter</artifactId>
-    <version>${version.org.kie}</version>
-</dependency>
-
+    <dependency>
+      <groupId>org.kie</groupId>
+        <artifactId>kie-server-spring-boot-starter</artifactId>
+        <version>${version.org.kie}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-
-<dependency>
-  <groupId>org.apache.cxf</groupId>
-  <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
-  <version>3.1.11</version>
-</dependency>
-<dependency>
-  <groupId>io.swagger</groupId>
-  <artifactId>swagger-jaxrs</artifactId>
-  <version>1.5.15</version>
-  <exclusions>
-    <exclusion>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-    </exclusion>
-  </exclusions>
-</dependency>
-
-<dependency>
-  <groupId>org.webjars</groupId>
-  <artifactId>swagger-ui</artifactId>
-  <version>2.2.10</version>
-</dependency>
-
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
+      <version>3.1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-jaxrs</artifactId>
+      <version>1.5.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>swagger-ui</artifactId>
+      <version>2.2.10</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -70,52 +63,44 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
-
-          <plugin>
-             <groupId>org.ippul.maven.plugin</groupId>
-             <artifactId>offliner-maven-plugin</artifactId>
-             <version>1.0-SNAPSHOT</version>
-             <executions>
-                <execution>
-                  <phase>prepare-package</phase>
-                   <goals>
-                      <goal>offliner</goal>
-                   </goals>
-                   <configuration>
-                      <settingsFile>settings-nexus.xml</settingsFile>
-                      <outputDirectory>./local-m2-repository-offliner/</outputDirectory>
-                      <localMavenRepository>~/.m2/repository</localMavenRepository>
-                      <artifacts>
-                         <gav>com.redhat:basic-kjar:1.0.0</gav>
-                         <gav>com.redhat:basic-kjar:2.0.0</gav>
-                         <gav>com.redhat:example-retail-credit-kjar:1.0.0</gav>
-                      </artifacts>
-                   </configuration>
-                </execution>
-             </executions>
-          </plugin>
-
+      <plugin>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-maven-plugin</artifactId>
+        <version>${version.org.kie}</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>package-dependencies-kjar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>com.redhat</groupId>
+              <artifactId>basic-kjar</artifactId>
+              <version>1.0.0</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>com.redhat</groupId>
+              <artifactId>basic-kjar</artifactId>
+              <version>3.0.0</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>com.redhat</groupId>
+              <artifactId>example-retail-credit-kjar</artifactId>
+              <version>1.0.0</version>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>  
-
-    <!-- Use to test offliner functionality for building local KJAR dependencies repository. May need to change <phase> in <build> to "compile" -->	  
-    <profile>
-      <id>offliner</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.h2database</groupId>
-          <artifactId>h2</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-
-
-    <!-- Profiles with local Springboot Runtime based on Database -->	    
+    <!-- Profiles with local Springboot Runtime based on Database -->
     <profile>
       <id>h2</id>
       <activation>
@@ -180,16 +165,16 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>fabric8-maven-plugin</artifactId>
-            <version>${fabric8.version}</version>
+            <groupId>org.eclipse.jkube</groupId>
+            <artifactId>openshift-maven-plugin</artifactId>
+            <version>${jkube.version}</version>
             <configuration>
               <verbose>false</verbose>
               <images>
                 <image>
                   <name>apps/${project.artifactId}:${project.version}</name>
                   <build>
-                    <from>fabric8/java-jboss-openjdk8-jdk</from>
+                    <from>redhat-openjdk-18/redhat-openjdk-18/openjdk18-openshift</from>
                     <assembly>
                       <targetDir>/</targetDir>
                       <inline>
@@ -237,7 +222,7 @@
       </build>
     </profile>
 
-    <!-- Cloud Profiles - Openshift used with command line fabric8 tested and working. See README.adoc -->
+    <!-- Cloud Profiles - Openshift used with command line jkube tested and working. See README.adoc -->
 
     <profile>
       <id>openshift</id>
@@ -248,27 +233,27 @@
       </activation>
 
       <properties>
-        <fabric8.mode>openshift</fabric8.mode>
-        <fabric8.build.strategy>docker</fabric8.build.strategy>
+        <jkube.mode>openshift</jkube.mode>
+        <jkube.build.strategy>docker</jkube.build.strategy>
       </properties>
 
       <dependencies>
-         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-         </dependency>
+        <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+        </dependency>
       </dependencies>
 
       <build>
         <plugins>
           <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>fabric8-maven-plugin</artifactId>
-            <version>${fabric8.version}</version>
+            <groupId>org.eclipse.jkube</groupId>
+            <artifactId>openshift-maven-plugin</artifactId>
+            <version>${jkube.version}</version>
             <configuration>
               <images>
                 <image>
-                  <name>${fabric8.namespace}/${project.artifactId}:${project.version}</name>
+                  <name>${jkube.namespace}/${project.artifactId}:${project.version}</name>
                   <!--alias>${project.artifactId}</alias>
                   <tags>
                     <tag>${project.version}</tag>
@@ -290,36 +275,40 @@
                             <destName>${project.artifactId}.xml</destName>
                           </file>
                         </files>
-                        <fileSet>
-                          <directory>src/main/docker</directory>
-                          <outputDirectory>opt/jboss/.m2</outputDirectory>
-                          <includes>
-                            <include>settings.xml</include>
-                          </includes>
-                        </fileSet>
-                        <fileSet>
-                          <directory>./local-m2-repository-offliner</directory>
-                          <outputDirectory>opt/jboss/.m2/repository</outputDirectory>        
-                        </fileSet>
+                        <fileSets>
+
+                          <fileSet>
+                            <directory>src/main/docker</directory>
+                            <outputDirectory>opt/jboss/.m2</outputDirectory>
+                            <includes>
+                              <include>settings.xml</include>
+                            </includes>
+                          </fileSet>
+                          <fileSet>
+                            <directory>./local-m2-repository-offliner</directory>
+                            <outputDirectory>opt/jboss/.m2/repository</outputDirectory>
+                          </fileSet>
+                        </fileSets>
+
                         <!--fileSet>
                           <directory>../business-application-kjar/target/local-repository/maven</directory>
-                          <outputDirectory>opt/jboss/.m2/repository</outputDirectory>        
+                          <outputDirectory>opt/jboss/.m2/repository</outputDirectory>
                         </fileSet-->
                       </inline>
                       <user>jboss:jboss:jboss</user>
                     </assembly>
                     <env>
                       <SPRING_PROFILES_ACTIVE>openshift</SPRING_PROFILES_ACTIVE>
-                     </env>
-                     <env>
-                       <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-profile</JAVA_OPTIONS>
+                    </env>
+                    <env>
+                      <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-profile</JAVA_OPTIONS>
                     </env>
                     <ports>
                       <port>8090</port>
                     </ports>
                     <runCmds>
-                      <run>chgrp -Rf root /opt/jboss &amp;&amp; chmod -Rf g+w /opt/jboss</run>
-                      <run>chgrp -Rf root /deployments &amp;&amp; chmod -Rf g+w /deployments</run>
+                      <run>chgrp -R root /opt/jboss/.m2 &amp;&amp; chmod -R g+w /opt/jboss/.m2</run>
+                      <run>chgrp -R root /deployments &amp;&amp; chmod -R g+w /deployments</run>
                     </runCmds>
                   </build>
                 </image>
@@ -327,20 +316,20 @@
               <generateRoute>true</generateRoute>
               <enricher>
                 <config>
-                  <f8-healthcheck-spring-boot>
+                  <jkube-healthcheck-spring-boot>
                     <timeoutSeconds>1</timeoutSeconds>
                     <readinessProbeInitialDelaySeconds>60</readinessProbeInitialDelaySeconds>
                     <livenessProbeInitialDelaySeconds>30</livenessProbeInitialDelaySeconds>
                     <failureThreshold>3</failureThreshold>
                     <successThreshold>1</successThreshold>
-                  </f8-healthcheck-spring-boot>
+                  </jkube-healthcheck-spring-boot>
                 </config>
               </enricher>
               <resources>
                 <annotations>
                 </annotations>
                 <env>
-                   <GC_MAX_METASPACE_SIZE>512</GC_MAX_METASPACE_SIZE>
+                  <GC_MAX_METASPACE_SIZE>512</GC_MAX_METASPACE_SIZE>
                 </env>
                 <openshiftBuildConfig>
                   <requests>
@@ -381,7 +370,7 @@
     </profile>
 
 
-    <!-- Cloud Profiles - Openshift with Dockerfile 'install' phase, tested and working. See README.adoc -->	    
+    <!-- Cloud Profiles - Openshift with Dockerfile 'install' phase, tested and working. See README.adoc -->
     <profile>
       <id>openshift-docker</id>
       <activation>
@@ -391,53 +380,53 @@
       </activation>
 
       <properties>
-        <fabric8.mode>openshift</fabric8.mode>
-        <fabric8.build.strategy>docker</fabric8.build.strategy>
+        <jkube.mode>openshift</jkube.mode>
+        <jkube.build.strategy>docker</jkube.build.strategy>
       </properties>
 
       <dependencies>
-         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-         </dependency>
+        <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+        </dependency>
       </dependencies>
 
       <build>
         <plugins>
           <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>fabric8-maven-plugin</artifactId>
-            <version>${fabric8.version}</version>
+            <groupId>org.eclipse.jkube</groupId>
+            <artifactId>openshift-maven-plugin</artifactId>
+            <version>${jkube.version}</version>
             <configuration>
               <images>
                 <image>
-                  <name>${fabric8.namespace}/${project.artifactId}:${project.version}</name>
+                  <name>${jkube.namespace}/${project.artifactId}:${project.version}</name>
                   <build>
-                     <dockerFileDir>${project.basedir}</dockerFileDir>
-                     <dockerFile>Dockerfile</dockerFile>
+                    <dockerFileDir>${project.basedir}</dockerFileDir>
+                    <dockerFile>Dockerfile</dockerFile>
                   </build>
                 </image>
               </images>
               <generateRoute>true</generateRoute>
               <enricher>
                 <config>
-                  <f8-healthcheck-spring-boot>
+                  <jkube-healthcheck-spring-boot>
                     <timeoutSeconds>1</timeoutSeconds>
                     <readinessProbeInitialDelaySeconds>60</readinessProbeInitialDelaySeconds>
                     <livenessProbeInitialDelaySeconds>30</livenessProbeInitialDelaySeconds>
                     <failureThreshold>3</failureThreshold>
                     <successThreshold>1</successThreshold>
-                  </f8-healthcheck-spring-boot>
+                  </jkube-healthcheck-spring-boot>
                 </config>
               </enricher>
               <resources>
                 <annotations>
                 </annotations>
                 <env>
-                   <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-dockerfile-profile</JAVA_OPTIONS>
+                  <JAVA_OPTIONS>-Dorg.drools.server.filter.classes=true -Dspring.profiles.active=openshift -Dorg.kie.server.startup.strategy=LocalContainersStartupStrategy -Dorg.kie.server.mode=PRODUCTION -Dkie.maven.settings.custom=/opt/jboss/.m2/settings.xml -Dorg.guvnor.m2repo.dir=/opt/jboss/.m2/repository -Dapplied=pom-openshift-dockerfile-profile</JAVA_OPTIONS>
                 </env>
                 <env>
-                   <GC_MAX_METASPACE_SIZE>512</GC_MAX_METASPACE_SIZE>
+                  <GC_MAX_METASPACE_SIZE>512</GC_MAX_METASPACE_SIZE>
                 </env>
                 <openshiftBuildConfig>
                   <requests>
@@ -468,7 +457,7 @@
                 <phase>install</phase>
                 <goals>
                   <goal>resource</goal>
-		  <goal>build</goal>
+                  <goal>build</goal>
                   <goal>deploy</goal>
                 </goals>
               </execution>
@@ -477,7 +466,6 @@
         </plugins>
       </build>
     </profile>
-
 
   </profiles>
 
